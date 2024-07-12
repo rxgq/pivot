@@ -1,3 +1,20 @@
 {
-    "workbench.colorTheme": "Tokyo Night Storm"
+    "workbench.colorTheme": "Tokyo Night Storm",
+    "files.associations": {
+        "*.rasi": "css",
+        "*.bbmodel": "json",
+        "*.sublime-snippet": "xml",
+        "*.hbs": "html",
+        "*.ejs": "html",
+        "*.emu": "html",
+        "lesskey": "lesskey",
+        "*.Xresources": "xdefaults",
+        "i3/config": "i3",
+        "i3/*.conf": "i3",
+        "polybar/config": "ini",
+        "polybar/*.conf": "ini",
+        "time.h": "c",
+        "stdlib.h": "c",
+        "math.h": "c"
+    }
 }
