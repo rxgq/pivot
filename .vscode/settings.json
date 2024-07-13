@@ -15,6 +15,7 @@
         "polybar/*.conf": "ini",
         "time.h": "c",
         "stdlib.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "windows.h": "c"
     }
 }
