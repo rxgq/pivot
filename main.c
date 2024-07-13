@@ -41,12 +41,23 @@ HWND create_window(HINSTANCE hInstance, const RomaWindow *window) {
     return hwnd;
 }
 
+void draw_text(HWND hwnd, char *text) {
+    RECT bounds;
+    GetClientRect(hwnd, &bounds);
+
+    HDC hdc = GetDC(hwnd);
+
+    DrawText(hdc, text, -1, &bounds, DT_CENTER | DT_VCENTER);
+
+    ReleaseDC(hwnd, hdc);
+}
+
 int main() {
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
     RomaWindow window = {"roguelike", 512, 512};
     HWND hwnd = create_window(hInstance, &window);
-
+    draw_text(hwnd, "Hello World!");
 
 
     MSG msg;
