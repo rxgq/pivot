@@ -5,18 +5,18 @@ typedef struct {
     int height;
     int width;
     HWND hwnd;
-} RomaWindow;
+} RunicView;
 
-RomaWindow* create_window(char *title, int height, int width) {
-    RomaWindow *window = malloc(sizeof(RomaWindow));
-    if (!window) {
+RunicView* create_window(char *title, int height, int width) {
+    RunicView *view = malloc(sizeof(RunicView));
+    if (!view) {
         MessageBox(NULL, "Memory Allocation Failed!", "Error", MB_ICONEXCLAMATION | MB_OK);
         return NULL;
     }
 
-    window->title = title;
-    window->height = height;
-    window->width = width;
+    view->title = title;
+    view->height = height;
+    view->width = width;
 
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
@@ -27,61 +27,61 @@ RomaWindow* create_window(char *title, int height, int width) {
     wc.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
     wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
-    wc.lpszClassName = window->title;
+    wc.lpszClassName = view->title;
 
     if (!RegisterClassEx(&wc)) {
         MessageBox(NULL, "Window Registration Failed!", "Error", MB_ICONEXCLAMATION | MB_OK);
         return NULL;
     }
 
-    window->hwnd = CreateWindowEx(
+    view->hwnd = CreateWindowEx(
         0,
-        window->title,
-        window->title,
+        view->title,
+        view->title,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        window->width, window->height,
+        view->width, view->height,
         NULL, NULL, hInstance, NULL);
 
-    if (window->hwnd == NULL) {
+    if (view->hwnd == NULL) {
         MessageBox(NULL, "Window Creation Failed!", "Error", MB_ICONEXCLAMATION | MB_OK);
         return NULL;
     }
 
-    ShowWindow(window->hwnd, SW_SHOWNORMAL);
-    UpdateWindow(window->hwnd);
+    ShowWindow(view->hwnd, SW_SHOWNORMAL);
+    UpdateWindow(view->hwnd);
 
-    return window;
+    return view;
 }
 
-void draw_text(RomaWindow *window, char *text) {
+void draw_text(RunicView *view, char *text) {
     RECT bounds;
-    GetClientRect(window->hwnd, &bounds);
+    GetClientRect(view->hwnd, &bounds);
 
-    HDC hdc = GetDC(window->hwnd);
+    HDC hdc = GetDC(view->hwnd);
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
 
-    ReleaseDC(window->hwnd, hdc);
+    ReleaseDC(view->hwnd, hdc);
 }
 
-void draw_text_from_top_left(RomaWindow *window, char *text, int t, int l) {
+void draw_text_from_top_left(RunicView *view, char *text, int t, int l) {
     RECT bounds;
-    GetClientRect(window->hwnd, &bounds);
+    GetClientRect(view->hwnd, &bounds);
 
     bounds.top = t;
     bounds.left = l;
 
-    HDC hdc = GetDC(window->hwnd);
+    HDC hdc = GetDC(view->hwnd);
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
 
-    ReleaseDC(window->hwnd, hdc);
+    ReleaseDC(view->hwnd, hdc);
 }
 
-void draw_text_from_top_right(RomaWindow *window, char *text, int t, int r) {
+void draw_text_from_top_right(RunicView *view, char *text, int t, int r) {
     RECT bounds;
-    GetClientRect(window->hwnd, &bounds);
+    GetClientRect(view->hwnd, &bounds);
 
-    HDC hdc = GetDC(window->hwnd);
+    HDC hdc = GetDC(view->hwnd);
 
     SIZE textSize;
     GetTextExtentPoint32(hdc, text, strlen(text), &textSize);
@@ -92,14 +92,14 @@ void draw_text_from_top_right(RomaWindow *window, char *text, int t, int r) {
 
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
 
-    ReleaseDC(window->hwnd, hdc);
+    ReleaseDC(view->hwnd, hdc);
 }
 
-void draw_text_from_bottom_left(RomaWindow *window, char *text, int b, int l) {
+void draw_text_from_bottom_left(RunicView *view, char *text, int b, int l) {
     RECT bounds;
-    GetClientRect(window->hwnd, &bounds);
+    GetClientRect(view->hwnd, &bounds);
 
-    HDC hdc = GetDC(window->hwnd);
+    HDC hdc = GetDC(view->hwnd);
 
     SIZE textSize;
     GetTextExtentPoint32(hdc, text, strlen(text), &textSize);
@@ -110,15 +110,15 @@ void draw_text_from_bottom_left(RomaWindow *window, char *text, int b, int l) {
 
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
 
-    ReleaseDC(window->hwnd, hdc);
+    ReleaseDC(view->hwnd, hdc);
 }
 
 
-void draw_text_from_bottom_right(RomaWindow *window, char *text, int b, int r) {
+void draw_text_from_bottom_right(RunicView *view, char *text, int b, int r) {
     RECT bounds;
-    GetClientRect(window->hwnd, &bounds);
+    GetClientRect(view->hwnd, &bounds);
 
-    HDC hdc = GetDC(window->hwnd);
+    HDC hdc = GetDC(view->hwnd);
 
     SIZE textSize;
     GetTextExtentPoint32(hdc, text, strlen(text), &textSize);
@@ -130,12 +130,12 @@ void draw_text_from_bottom_right(RomaWindow *window, char *text, int b, int r) {
 
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
 
-    ReleaseDC(window->hwnd, hdc);
+    ReleaseDC(view->hwnd, hdc);
 }
 
 int main() {
-    RomaWindow *window = create_window("Roguelike", 512, 512);
-    draw_text_from_bottom_left(window, "MY_TasdasdEXT_STRadsasdasdasING", 100, 10);
+    RunicView *view = create_window("Roguelike", 512, 512);
+    draw_text_from_bottom_left(view, "MY_TasdasdEXT_STRadsasdasdasING", 100, 10);
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
