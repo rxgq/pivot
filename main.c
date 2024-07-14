@@ -15,6 +15,13 @@ typedef enum {
     GREEN
 } RunicColor;
 
+typedef struct {
+    const char *body;
+    const RunicColor color;
+    int x;
+    int y;
+} Player;
+
 RunicView* create_window(char *title, int height, int width) {
     RunicView *view = malloc(sizeof(RunicView));
     if (!view) {
@@ -170,10 +177,30 @@ void draw_my_box(RunicView *view) {
     draw_char_from_top_right(view, "---------------", BLACK, 258, 200);
 }
 
+void draw_box_from_x_y(RunicView *view, int width, int height, int x, int y) {
+    HDC hdc = GetDC(view->hwnd);
+    Rectangle(hdc, x, y, x + width, y + height);
+    ReleaseDC(view->hwnd, hdc);
+}
+
+void draw_player(RunicView *view, Player *p) {
+    HDC hdc = GetDC(view->hwnd);
+
+    RECT bounds;
+    GetClientRect(view->hwnd, &bounds);
+
+    COLORREF oldColor = SetTextColor(hdc, get_color(p->color));
+    DrawText(hdc, p->body, -1, &bounds, DT_LEFT);
+    SetTextColor(hdc, oldColor);
+
+    ReleaseDC(view->hwnd, hdc);
+}
+
 int main() {
     RunicView *view = create_window("Roguelike", 512, 512);
-    draw_my_box(view);
 
+    Player player = {"@", BLUE, 100, 400};
+    draw_player(view, &player);
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
