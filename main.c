@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <stdio.h>
 
 typedef struct {
     const char* title;
@@ -91,6 +92,26 @@ void draw_char(RunicView *view, char *text, RunicColor color) {
     ReleaseDC(view->hwnd, hdc);
 }
 
+void draw_char_at(RunicView *view, char *text, RunicColor color, int x, int y) {
+    HDC hdc = GetDC(view->hwnd);
+
+    SIZE textSize;
+    GetTextExtentPoint32(hdc, text, strlen(text), &textSize);
+
+    RECT bounds;
+    bounds.left = x;
+    bounds.top = y;
+    bounds.right = bounds.left + textSize.cx;
+    bounds.bottom = bounds.top + textSize.cy;
+
+    COLORREF oldColor = SetTextColor(hdc, get_color(color));
+    DrawText(hdc, text, -1, &bounds, DT_LEFT | DT_TOP);
+    SetTextColor(hdc, oldColor);
+
+    ReleaseDC(view->hwnd, hdc);
+}
+
+
 void draw_char_from_top_left(RunicView *view, char *text, RunicColor color, int t, int l) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
@@ -147,7 +168,6 @@ void draw_char_from_bottom_left(RunicView *view, char *text, RunicColor color, i
     ReleaseDC(view->hwnd, hdc);
 }
 
-
 void draw_text_from_bottom_right(RunicView *view, char *text, RunicColor color, int b, int r) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
@@ -187,7 +207,8 @@ void draw_player(RunicView *view, Player *p) {
     HDC hdc = GetDC(view->hwnd);
 
     RECT bounds;
-    GetClientRect(view->hwnd, &bounds);
+    bounds.left = p->x;
+    bounds.top = p->y;
 
     COLORREF oldColor = SetTextColor(hdc, get_color(p->color));
     DrawText(hdc, p->body, -1, &bounds, DT_LEFT);
@@ -196,16 +217,42 @@ void draw_player(RunicView *view, Player *p) {
     ReleaseDC(view->hwnd, hdc);
 }
 
+void move_player(RunicView *view, Player *p, int dx, int dy) {
+    draw_char_at(view, " ", BLACK, p->x, p->y);
+
+    p->x += dx;
+    p->y += dy;
+
+    draw_player(view, p);
+}
+
+void handle_input(RunicView *view, Player *p) {
+    if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+        move_player(view, p, -4, 0);
+    }
+    if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+        move_player(view, p, 4, 0);
+    }
+    if (GetAsyncKeyState(VK_UP) & 0x8000) {
+        move_player(view, p, 0, -4);
+    }
+    if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+        move_player(view, p, 0, 4);
+    }
+}
+
 int main() {
     RunicView *view = create_window("Roguelike", 512, 512);
 
-    Player player = {"@", BLUE, 100, 400};
+    Player player = {"@", BLUE, 250, 240};
     draw_player(view, &player);
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+
+        handle_input(view, &player);
     }
 
     return 0;
