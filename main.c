@@ -7,6 +7,12 @@ typedef struct {
     HWND hwnd;
 } RunicView;
 
+typedef enum {
+    BLACK,
+    WHITE,
+    RED
+} RunicColor;
+
 RunicView* create_window(char *title, int height, int width) {
     RunicView *view = malloc(sizeof(RunicView));
     if (!view) {
@@ -54,17 +60,27 @@ RunicView* create_window(char *title, int height, int width) {
     return view;
 }
 
-void draw_text(RunicView *view, char *text) {
+COLORREF get_color(RunicColor color) {
+    switch (color) {
+        case BLACK: return RGB(255, 255, 255);
+        case WHITE: return RGB(0, 0, 0);
+        case RED: return RGB(255, 0, 0);
+    }
+}
+
+void draw_char(RunicView *view, char *text, RunicColor color) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
-
     HDC hdc = GetDC(view->hwnd);
+
+    COLORREF oldColor = SetTextColor(hdc, get_color(color));
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
+    SetTextColor(hdc, oldColor);
 
     ReleaseDC(view->hwnd, hdc);
 }
 
-void draw_text_from_top_left(RunicView *view, char *text, int t, int l) {
+void draw_char_from_top_left(RunicView *view, char *text, int t, int l) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
 
@@ -77,7 +93,7 @@ void draw_text_from_top_left(RunicView *view, char *text, int t, int l) {
     ReleaseDC(view->hwnd, hdc);
 }
 
-void draw_text_from_top_right(RunicView *view, char *text, int t, int r) {
+void draw_char_from_top_right(RunicView *view, char *text, int t, int r) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
 
@@ -95,7 +111,7 @@ void draw_text_from_top_right(RunicView *view, char *text, int t, int r) {
     ReleaseDC(view->hwnd, hdc);
 }
 
-void draw_text_from_bottom_left(RunicView *view, char *text, int b, int l) {
+void draw_char_from_bottom_left(RunicView *view, char *text, int b, int l) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
 
@@ -135,7 +151,7 @@ void draw_text_from_bottom_right(RunicView *view, char *text, int b, int r) {
 
 int main() {
     RunicView *view = create_window("Roguelike", 512, 512);
-    draw_text_from_bottom_left(view, "MY_TasdasdEXT_STRadsasdasdasING", 100, 10);
+    draw_char(view, "____________", RED);
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
