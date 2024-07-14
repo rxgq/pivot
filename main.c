@@ -10,7 +10,9 @@ typedef struct {
 typedef enum {
     BLACK,
     WHITE,
-    RED
+    RED,
+    BLUE,
+    GREEN
 } RunicColor;
 
 RunicView* create_window(char *title, int height, int width) {
@@ -62,9 +64,11 @@ RunicView* create_window(char *title, int height, int width) {
 
 COLORREF get_color(RunicColor color) {
     switch (color) {
-        case BLACK: return RGB(255, 255, 255);
-        case WHITE: return RGB(0, 0, 0);
-        case RED: return RGB(255, 0, 0);
+        case BLACK: return RGB(0,   0,   0);
+        case WHITE: return RGB(255, 255, 255);
+        case RED:   return RGB(255, 0,   0);
+        case BLUE:  return RGB(0,   0,   255);
+        case GREEN: return RGB(0,   255, 0);
     }
 }
 
@@ -80,7 +84,7 @@ void draw_char(RunicView *view, char *text, RunicColor color) {
     ReleaseDC(view->hwnd, hdc);
 }
 
-void draw_char_from_top_left(RunicView *view, char *text, int t, int l) {
+void draw_char_from_top_left(RunicView *view, char *text, RunicColor color, int t, int l) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
 
@@ -88,12 +92,15 @@ void draw_char_from_top_left(RunicView *view, char *text, int t, int l) {
     bounds.left = l;
 
     HDC hdc = GetDC(view->hwnd);
+
+    COLORREF oldColor = SetTextColor(hdc, get_color(color));
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
+    SetTextColor(hdc, oldColor);
 
     ReleaseDC(view->hwnd, hdc);
 }
 
-void draw_char_from_top_right(RunicView *view, char *text, int t, int r) {
+void draw_char_from_top_right(RunicView *view, char *text, RunicColor color, int t, int r) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
 
@@ -106,12 +113,14 @@ void draw_char_from_top_right(RunicView *view, char *text, int t, int r) {
     bounds.right = bounds.right - r;
     bounds.left = bounds.right - textSize.cx;
 
+    COLORREF oldColor = SetTextColor(hdc, get_color(color));
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
+    SetTextColor(hdc, oldColor);
 
     ReleaseDC(view->hwnd, hdc);
 }
 
-void draw_char_from_bottom_left(RunicView *view, char *text, int b, int l) {
+void draw_char_from_bottom_left(RunicView *view, char *text, RunicColor color, int b, int l) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
 
@@ -124,13 +133,15 @@ void draw_char_from_bottom_left(RunicView *view, char *text, int b, int l) {
     bounds.bottom = bounds.bottom - b;
     bounds.top = bounds.bottom - textSize.cy;
 
+    COLORREF oldColor = SetTextColor(hdc, get_color(color));
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
+    SetTextColor(hdc, oldColor);
 
     ReleaseDC(view->hwnd, hdc);
 }
 
 
-void draw_text_from_bottom_right(RunicView *view, char *text, int b, int r) {
+void draw_text_from_bottom_right(RunicView *view, char *text, RunicColor color, int b, int r) {
     RECT bounds;
     GetClientRect(view->hwnd, &bounds);
 
@@ -144,14 +155,25 @@ void draw_text_from_bottom_right(RunicView *view, char *text, int b, int r) {
     bounds.top = bounds.bottom - textSize.cy;
     bounds.left = bounds.right - textSize.cx;
 
+    COLORREF oldColor = SetTextColor(hdc, get_color(color));
     DrawText(hdc, text, -1, &bounds, DT_LEFT);
+    SetTextColor(hdc, oldColor);
 
     ReleaseDC(view->hwnd, hdc);
+}
+
+void draw_my_box(RunicView *view) {
+    draw_char_from_top_right(view, "---------------", BLACK, 200, 200);
+    draw_char_from_top_right(view, "| . . . . . . |", BLACK, 210, 200);
+    draw_char_from_top_right(view, "| . . . . . . |", BLACK, 226, 200);
+    draw_char_from_top_right(view, "| . . . . . . |", BLACK, 242, 200);
+    draw_char_from_top_right(view, "---------------", BLACK, 258, 200);
 }
 
 int main() {
     RunicView *view = create_window("Roguelike", 512, 512);
-    draw_char(view, "____________", RED);
+    draw_my_box(view);
+
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
