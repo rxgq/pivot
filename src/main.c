@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "lexer.h"
 
 int main() {
-    FILE *fptr = fopen("code.txt", "r");
+    FILE *fptr = fopen("example/code.txt", "r");
     char *buff;
 
     if (!fptr) {
@@ -18,5 +19,10 @@ int main() {
     fread(buff, 1, sz, fptr);
     buff[sz] = '\0';
 
+    fclose(fptr);
     
+    LEXER *lexer = create_lexer(buff);
+    tokenize(lexer);
+
+    free(buff);
 }

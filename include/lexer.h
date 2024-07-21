@@ -9,5 +9,6 @@ typedef struct {
 } LEXER;
 
 TOKEN *tokenize(LEXER *lexer);
+LEXER *create_lexer(char *source);
 
 #endif
