@@ -2,6 +2,7 @@
 #include <string.h>
 #include "lexer.h"
 #include "token.h"
+#include "ctype.h"
 
 void lexer_advance(LEXER *lexer) {
     lexer->curr++;
@@ -28,8 +29,38 @@ TOKEN* create_token(char *value, TokenType type) {
     return token;
 }
 
-TOKEN *on_number() {
+TOKEN *on_number(LEXER *lexer) {
+    char buffer[256];
+    int i = 0;
 
+    while (isdigit(lexer->source[lexer->curr])) {
+        if (i < sizeof(buffer) - 1) {
+            buffer[i++] = lexer->source[lexer->curr];
+        }
+        lexer_advance(lexer);
+    }
+
+    lexer->curr--;
+
+    buffer[i] = '\0';
+    return create_token(buffer, NUMBER);
+}
+
+TOKEN *on_identifier(LEXER *lexer) {
+    char buffer[256];
+    int i = 0;
+
+    while (isalnum(lexer->source[lexer->curr]) || lexer->source[lexer->curr] == '_') {
+        if (i < sizeof(buffer) - 1) {
+            buffer[i++] = lexer->source[lexer->curr];
+        }
+        lexer_advance(lexer);
+    }
+    
+    lexer->curr--;
+
+    buffer[i] = '\0';
+    return create_token(buffer, IDENTIFIER);
 }
 
 TOKEN *next_token(LEXER *lexer) {
@@ -78,7 +109,16 @@ TOKEN *next_token(LEXER *lexer) {
         }
 
         case ' ': return create_token(" ", WHITESPACE);
-        default:  return create_token("", BAD);
+        case '\0': return NULL;
+
+        default:
+            if (isalpha(c)) {
+                return on_identifier(lexer);
+            } else if (isdigit(c)) {
+                return on_number(lexer);
+            } else {
+                return create_token("", BAD);
+            }
     }
 }
 

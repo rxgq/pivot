@@ -22,6 +22,8 @@ char *token_type_to_str(TokenType type) {
         case RPAREN: return "RPAREN";
         case LBRACE: return "LBRACE";
         case RBRACE: return "RBRACE";
+        case NUMBER: return "NUMBER";
+        case IDENTIFIER: return "IDENTIFIER";
         case ASSIGNMENT: return "ASSIGNMENT";
         case WHITESPACE: return "WHITESPACE";
         default: return "UNKNOWN";

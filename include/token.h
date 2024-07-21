@@ -5,6 +5,7 @@ typedef enum {
     PLUS, MINUS, STAR, SLASH,
     EQ, ASSIGNMENT, LPAREN, RPAREN, LBRACE, RBRACE,
     LT, GT, LTE, GTE, NEQ, NOT,
+    IDENTIFIER, NUMBER,
     BAD, WHITESPACE,
 } TokenType;
 
