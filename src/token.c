@@ -11,6 +11,19 @@ char *token_type_to_str(TokenType type) {
         case MINUS: return "MINUS";
         case STAR: return "STAR";
         case SLASH: return "SLASH";
+        case EQ: return "EQ";
+        case LT: return "LT";
+        case GT: return "GT";
+        case GTE: return "GTE";
+        case LTE: return "LTE";
+        case NEQ: return "NEQ";
+        case NOT: return "NOT";
+        case LPAREN: return "LPAREN";
+        case RPAREN: return "RPAREN";
+        case LBRACE: return "LBRACE";
+        case RBRACE: return "RBRACE";
+        case ASSIGNMENT: return "ASSIGNMENT";
+        case WHITESPACE: return "WHITESPACE";
         default: return "UNKNOWN";
     }
 }

@@ -3,7 +3,9 @@
 
 typedef enum {
     PLUS, MINUS, STAR, SLASH,
-    BAD,
+    EQ, ASSIGNMENT, LPAREN, RPAREN, LBRACE, RBRACE,
+    LT, GT, LTE, GTE, NEQ, NOT,
+    BAD, WHITESPACE,
 } TokenType;
 
 typedef struct {
