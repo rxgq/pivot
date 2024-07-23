@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer.h"
+#include "ast.h"
 
 int main() {
     FILE *fptr = fopen("example/code.txt", "r");
@@ -22,7 +23,11 @@ int main() {
     fclose(fptr);
     
     LEXER *lexer = create_lexer(buff);
-    tokenize(lexer);
+    TOKEN* tokens = tokenize(lexer);
+
+    PARSER *parser = create_parser(tokens);
+    parse_ast(parser);
+
 
     free(buff);
 }

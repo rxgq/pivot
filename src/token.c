@@ -22,13 +22,14 @@ char *token_type_to_str(TokenType type) {
         case RPAREN: return "RPAREN";
         case LBRACE: return "LBRACE";
         case RBRACE: return "RBRACE";
-        case NUMBER: return "NUMBER";
+        case INT: return "INT";
         case IDENTIFIER: return "IDENTIFIER";
         case ASSIGNMENT: return "ASSIGNMENT";
         case WHITESPACE: return "WHITESPACE";
         case IF: return "IF";
         case ELIF: return "ELIF";
         case ELSE: return "ELSE";
+        case FLOAT: return "FLOAT";
         default: return "UNKNOWN";
     }
 }

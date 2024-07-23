@@ -50,7 +50,7 @@ TOKEN *on_number(LEXER *lexer) {
     }
 
     buffer[i] = '\0';
-    return create_token(buffer, NUMBER);
+    return create_token(buffer, has_decimal_point == 0 ? INT : FLOAT);
 }
 
 

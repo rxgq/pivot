@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -g -Iinclude
 LDFLAGS =
 
-SRCS = src/token.c src/lexer.c src/main.c
+SRCS = src/token.c src/lexer.c src/main.c src/ast.c
 OBJS = $(SRCS:.c=.o)
 TARGET = runic
 

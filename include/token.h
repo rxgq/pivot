@@ -4,11 +4,11 @@
 typedef enum {
     PLUS, MINUS, STAR, SLASH,
     EQ, ASSIGNMENT, LPAREN, RPAREN, LBRACE, RBRACE, LT, GT, LTE, GTE, NEQ, NOT,
-    IDENTIFIER, NUMBER,
+    IDENTIFIER, INT, FLOAT,
 
     IF, ELIF, ELSE,
 
-    BAD, WHITESPACE,
+    BAD, WHITESPACE, EOFT,
 } TokenType;
 
 typedef struct {
