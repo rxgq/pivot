@@ -2,7 +2,7 @@
 #include "token.h"
 
 void token_to_str(TOKEN token) {
-    printf("\nToken: %s %s", token.value, token_type_to_str(token.type));
+    printf("\nToken: >%s< %s", token.value, token_type_to_str(token.type));
 }
 
 char *token_type_to_str(TokenType type) {
@@ -26,6 +26,9 @@ char *token_type_to_str(TokenType type) {
         case IDENTIFIER: return "IDENTIFIER";
         case ASSIGNMENT: return "ASSIGNMENT";
         case WHITESPACE: return "WHITESPACE";
+        case IF: return "IF";
+        case ELIF: return "ELIF";
+        case ELSE: return "ELSE";
         default: return "UNKNOWN";
     }
 }

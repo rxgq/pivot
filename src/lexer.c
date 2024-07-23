@@ -32,19 +32,27 @@ TOKEN* create_token(char *value, TokenType type) {
 TOKEN *on_number(LEXER *lexer) {
     char buffer[256];
     int i = 0;
+    int has_decimal_point = 0;
 
-    while (isdigit(lexer->source[lexer->curr])) {
+    while (isdigit(lexer->source[lexer->curr]) || lexer->source[lexer->curr] == '.') {
+        if (lexer->source[lexer->curr] == '.') {
+            if (has_decimal_point == 1) {
+                break;
+            } else {
+                has_decimal_point = 1;
+            }
+        }
+
         if (i < sizeof(buffer) - 1) {
             buffer[i++] = lexer->source[lexer->curr];
         }
         lexer_advance(lexer);
     }
 
-    lexer->curr--;
-
     buffer[i] = '\0';
     return create_token(buffer, NUMBER);
 }
+
 
 TOKEN *on_identifier(LEXER *lexer) {
     char buffer[256];
@@ -60,6 +68,15 @@ TOKEN *on_identifier(LEXER *lexer) {
     lexer->curr--;
 
     buffer[i] = '\0';
+
+    if (strcmp(buffer, "if") == 0) {
+        return create_token(buffer, IF);
+    } else if (strcmp(buffer, "elif") == 0) {
+        return create_token(buffer, ELIF);
+    } else if (strcmp(buffer, "else") == 0) {
+        return create_token(buffer, ELSE);
+    }
+
     return create_token(buffer, IDENTIFIER);
 }
 
