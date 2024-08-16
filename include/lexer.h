@@ -13,7 +13,6 @@ typedef struct {
 
 Lexer *init_lexer(char *source);
 Token *tokenize(Lexer *lexer);
-Token next_token(char curr);
 void print(Lexer *lexer);
 
 #endif
