@@ -12,10 +12,20 @@ void print(Lexer *lexer) {
 
 Token next_token(char curr) {
     switch (curr) {
-        case '+': return init_token(PLUS, "+");
-        case '-': return init_token(MINUS, "-");
-        case '*': return init_token(STAR, "*");
-        case '/': return init_token(SLASH, "/");
+        case '+': return init_token(PLUS, curr);
+        case '-': return init_token(MINUS, curr);
+        case '*': return init_token(STAR, curr);
+        case '/': return init_token(SLASH, curr);
+        case '%': return init_token(MODULO, curr);
+        case '{': return init_token(LBRACE, curr);
+        case '}': return init_token(RBRACE, curr);
+        case '(': return init_token(LPAREN, curr);
+        case ')': return init_token(RPAREN, curr);
+        case ',': return init_token(COMMA, curr);
+        case '.': return init_token(DOT, curr);
+        case '[': return init_token(LSQBRACK, curr);
+        case ']': return init_token(RSQBRACK, curr);
+        case ' ': return init_token(WHITESPACE, " ");
         default:  return init_token(BAD_TOKEN, "BAD_TOKEN");
     }
 }

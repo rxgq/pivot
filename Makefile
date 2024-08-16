@@ -14,6 +14,5 @@ lexer.o: src/lexer.c include/lexer.h
 token.o: src/token.c include/token.h
 	gcc $(CFLAGS) -c src/token.c
 
-
 clean:
 	del /f $(OBJS) $(TARGET)
