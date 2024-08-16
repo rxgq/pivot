@@ -9,7 +9,7 @@ void print(Lexer *lexer) {
     printf("\n[ ======= TOKENS ======= ]\n");
 
     for (int i = 0; i < lexer->count; i++) {
-        printf("[%d: %s ]\n", i, lexer->tokens[i].value);
+        printf("[%d: %s ]\n", i, lexer->tokens[i].lexeme);
     }
 }
 
@@ -31,7 +31,7 @@ Token on_identifier(Lexer *lexer) {
 
     Token token;
     token.type = IDENTIFIER;
-    token.value = identifier;
+    token.lexeme = identifier;
     return token;
 }
 
@@ -57,7 +57,7 @@ Token on_numeric(Lexer *lexer) {
 
     Token token;
     token.type = NUMBER;
-    token.value = number;
+    token.lexeme = number;
     return token;
 }
 
@@ -83,7 +83,7 @@ Token on_string(Lexer *lexer) {
 
     Token token;
     token.type = STRING;
-    token.value = string;
+    token.lexeme = string;
     return token;
 }
 

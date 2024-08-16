@@ -11,10 +11,10 @@ typedef enum {
 } TokenType;
 
 typedef struct {
-    char *value;
+    char *lexeme;
     TokenType type;
 } Token;
 
-Token init_token(TokenType type, char* value);
+Token init_token(TokenType type, char* lexeme);
 
 #endif
