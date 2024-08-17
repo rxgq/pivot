@@ -1,4 +1,5 @@
 #include "token.h"
+#include "ast.h"
 
 #ifndef PARSER_H
 #define PARSER_H
@@ -9,6 +10,6 @@ typedef struct {
 } Parser;
 
 Parser *init_parser(Token *tokens);
-AST_NODE *parse_ast(Parser *parser);
+Program *parse_ast(Parser *parser);
 
 #endif

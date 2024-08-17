@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "lexer.h"
 #include "parser.h"
+#include "ast.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -32,10 +33,11 @@ int main(int argc, char *argv[]) {
 
     Lexer *lexer = init_lexer(buffer);
     Token* tokens = tokenize(lexer);
-    print(lexer);
 
     Parser *parser = init_parser(tokens);
-    parse_ast(parser);
+    Program* ast = parse_ast(parser);
+
+    print_ast(ast);
 
     free(buffer);
     return 0;

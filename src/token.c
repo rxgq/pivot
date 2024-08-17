@@ -32,7 +32,7 @@ char *print_token(TokenType type) {
         case OR: return "OR";
         case AND: return "AND";
         case IDENTIFIER: return "IDENTIFIER";
-        case NUMBER: return "NUMBER";
+        case NUMERIC: return "NUMERIC";
         case STRING: return "STRING";
         case WHITESPACE: return "WHITESPACE";
         case BAD_TOKEN: return "BAD TOKEN";
