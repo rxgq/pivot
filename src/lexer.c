@@ -5,7 +5,19 @@
 #include "lexer.h"
 #include "token.h"
 
-void print(Lexer *lexer) {
+KeywordMap keyword_map[] = {
+    {"if", IF},
+    {"elif", ELIF},
+    {"else", ELSE},
+    {"while", WHILE},
+    {"for", FOR},
+    {"let", LET},
+    {"true", TRUE_TOK},
+    {"false", FALSE_TOK},
+    {"END_KEYWORD", BAD_TOKEN}
+};
+
+void print_lexer(Lexer *lexer) {
     printf("\n[ ======= TOKENS ======= ]\n");
 
     for (int i = 0; i < lexer->count; i++) {
@@ -16,6 +28,17 @@ void print(Lexer *lexer) {
 void advance(Lexer *lexer) {
     lexer->current++;
 }
+
+TokenType check_keyword(const char *identifier) {
+    for (int i = 0; strcmp(keyword_map[i].keyword, "END_KEYWORD") == 1; i++) {
+        if (strcmp(keyword_map[i].keyword, identifier) == 0) {
+            return keyword_map[i].type;
+        }
+    }
+
+    return IDENTIFIER;
+}
+
 
 Token on_identifier(Lexer *lexer) {
     int start = lexer->current;
@@ -30,7 +53,7 @@ Token on_identifier(Lexer *lexer) {
     identifier[len] = '\0';
 
     Token token;
-    token.type = IDENTIFIER;
+    token.type = check_keyword(identifier);
     token.lexeme = identifier;
     return token;
 }

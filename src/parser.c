@@ -76,15 +76,36 @@ AST_NODE *parse_primary(Parser *parser) {
     }
 }
 
-AST_NODE *parse_additive(Parser *parser) {
+AST_NODE *parse_multiplicative(Parser *parser) {
     AST_NODE *left = parse_primary(parser);
+
+    while (match(parser, "*") || match(parser, "/") || match(parser, "%")) {
+        Token curr = parser->tokens[parser->current];
+        char *op = strdup(curr.lexeme);
+        parser_advance(parser);
+
+        AST_NODE *right = parse_primary(parser);
+
+        BinaryExpr *expr = (BinaryExpr *)malloc(sizeof(BinaryExpr));
+        expr->left = left;
+        expr->op = op;
+        expr->right = right;
+
+        left = init_node(AST_BINARY_EXPR, expr);
+    }
+
+    return left;
+}
+
+AST_NODE *parse_additive(Parser *parser) {
+    AST_NODE *left = parse_multiplicative(parser);
 
     while (match(parser, "+") || match(parser, "-")) {
         Token curr = parser->tokens[parser->current];
         char *op = strdup(curr.lexeme);
         parser_advance(parser);
 
-        AST_NODE *right = parse_primary(parser);
+        AST_NODE *right = parse_multiplicative(parser);
 
         BinaryExpr *expr = (BinaryExpr *)malloc(sizeof(BinaryExpr));
         expr->left = left;
@@ -117,6 +138,7 @@ Program *parse_ast(Parser *parser) {
         }
 
         AST_NODE *node = parse_additive(parser);
+
         if (node) {
             body[count++] = node;
         }

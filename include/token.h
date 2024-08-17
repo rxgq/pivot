@@ -7,11 +7,16 @@ typedef enum {
     LBRACE, RBRACE, LPAREN, RPAREN, LSQBRACK, RSQBRACK, SEMICOLON, COMMA, DOT,
     LESST, GREATERT, LESSTEQ, GREATERTEQ, EQUALS, NEQUALS, ASSIGNMENT, NOT, OR, AND,
 
-    IF, ELIF, ELSE, WHILE, FOR, LET,
+    IF, ELIF, ELSE, WHILE, FOR, LET, TRUE_TOK, FALSE_TOK,
 
     IDENTIFIER, NUMERIC, STRING,
     WHITESPACE, BAD_TOKEN, EOF_TOKEN
 } TokenType;
+
+typedef struct {
+    const char *keyword;
+    TokenType type;
+} KeywordMap;
 
 typedef struct {
     char *lexeme;

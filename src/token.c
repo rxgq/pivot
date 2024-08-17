@@ -37,18 +37,17 @@ char *print_token(TokenType type) {
         case WHITESPACE: return "WHITESPACE";
         case BAD_TOKEN: return "BAD TOKEN";
         case EOF_TOKEN: return "EOF_TOKEN";
+        case IF: return "IF";
+        case ELIF: return "ELIF";
+        case ELSE: return "ELSE";
+        case WHILE: return "WHILE";
+        case FOR: return "FOR";
+        case LET: return "LET";
+        case TRUE_TOK: return "TRUE_TOK";
+        case FALSE_TOK: return "FALSE_TOK";
         default: return "UNKNOWN";
     }
 }
-
-// typedef enum {
-//     PLUS, MINUS, STAR, SLASH, MODULO, PLUSEQ, MINUSEQ, STAREQ, SLASHEQ, MODULOEQ, 
-//     LBRACE, RBRACE, LPAREN, RPAREN, LSQBRACK, RSQBRACK, SEMICOLON, COMMA, DOT,
-//     LESST, GREATERT, LESSTEQ, GREATERTEQ, EQUALS, NEQUALS, ASSIGNMENT, NOT, OR, AND,
-
-//     IDENTIFIER, NUMBER, STRING,
-//     WHITESPACE, BAD_TOKEN, EOF_TOKEN
-// } TokenType;
 
 Token init_token(TokenType type, char* lexeme) {
     Token token;
