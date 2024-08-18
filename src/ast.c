@@ -19,6 +19,15 @@ void print_identifier_expr(IdentifierExpr *expr, int indent_level) {
     printf("%*sIdentifierExpr(%s)\n", indent_level, "", expr->value);
 }
 
+void print_assignment_expr(AssignmentExpr *expr, int indent_level) {
+    printf("%*sAssignmentExpr(\n", indent_level, "");
+    printf("%*sIdentifier: %s\n", indent_level + 2, "", expr->identifier);
+    printf("%*sValue:\n", indent_level + 2, "");
+    print_ast_node(expr->val, indent_level + 4);
+
+    printf("%*s)\n", indent_level, "");
+}
+
 void print_if_stmt(IfStmtExpr *expr, int indent_level) {
     printf("%*sIfStmt(\n", indent_level, "");
 
@@ -88,6 +97,9 @@ void print_ast_node(AST_NODE *node, int indent_level) {
             break;
         case AST_LOGICAL_EXPR:
             print_logical_expr(&node->node.logical_expr, indent_level);
+            break;
+        case AST_ASSIGNMENT_EXPR:
+            print_assignment_expr(&node->node.assignment_expr, indent_level);
             break;
         default:
             printf("%*sUnknown AST_NODE type\n", indent_level, "");

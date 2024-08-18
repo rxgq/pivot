@@ -14,6 +14,7 @@ typedef enum {
     AST_VAR_DEC,
     AST_IF_STMT,
     AST_LOGICAL_EXPR,
+    AST_ASSIGNMENT_EXPR
 } AST_TYPE;
 
 typedef struct {
@@ -60,6 +61,11 @@ typedef struct {
     AST_NODE *right;
 } LogicalExpr;
 
+typedef struct {
+    char *identifier;
+    AST_NODE *val;
+} AssignmentExpr;
+
 typedef struct AST_NODE {
     AST_TYPE type;
 
@@ -71,6 +77,7 @@ typedef struct AST_NODE {
         VarDecExpr var_dec_expr;
         IfStmtExpr if_stmt_expr;
         LogicalExpr logical_expr;
+        AssignmentExpr assignment_expr;
         BoolExpr bool_expr;
     } node;
 

@@ -74,6 +74,10 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
             node->node.logical_expr = *(LogicalExpr *)ast_node;
             break;
 
+        case AST_ASSIGNMENT_EXPR:
+            node->node.assignment_expr = *(AssignmentExpr *)ast_node;
+            break;
+
         default:
             free(node);
             fprintf(stderr, "Unknown AST_TYPE\n");
@@ -115,7 +119,7 @@ AST_NODE *parse_primary(Parser *parser) {
         return init_node(AST_BOOL, &expr);
     }
     else if (curr.type == IDENTIFIER) {
-        IdentifierExpr expr= *(IdentifierExpr *)malloc(sizeof(IdentifierExpr));;
+        IdentifierExpr expr= *(IdentifierExpr *)malloc(sizeof(IdentifierExpr));
         expr.value = strdup(curr.lexeme);
         return init_node(AST_IDENTIFIER, &expr);
     } else {
@@ -207,8 +211,29 @@ AST_NODE *parse_logical_or(Parser *parser) {
     return left;
 }
 
+AST_NODE *parse_assignment(Parser *parser) {
+    AST_NODE *left = parse_primary(parser);
+
+    if (match(parser, "=")) {
+        parser_advance(parser);
+
+        AST_NODE *val = parse_expr(parser);
+
+        expect_as(parser, SEMICOLON);
+
+        AssignmentExpr *expr = (AssignmentExpr *)malloc(sizeof(AssignmentExpr));
+        expr->identifier = left->node.identifier_expr.value;
+        expr->val = val;
+
+        return init_node(AST_ASSIGNMENT_EXPR, expr);
+    }
+
+    return left;
+}
+
+
 AST_NODE *parse_expr(Parser *parser) {
-    return parse_logical_or(parser);
+    return parse_assignment(parser);
 }
 
 AST_NODE *parse_var_dec(Parser *parser) {
@@ -288,7 +313,7 @@ AST_NODE *parse_stmt(Parser *parser) {
             return parse_expr(parser);
 
         default:
-            fprintf(stderr, "Unexpected token: %s\n", parser->tokens[parser->current].lexeme);
+            fprintf(stderr, "Unexpected stmt token: %s\n", parser->tokens[parser->current].lexeme);
             exit(EXIT_FAILURE);
     }
 }
@@ -308,7 +333,7 @@ Program *parse_ast(Parser *parser) {
         if (node) {
             body[count++] = node;
         } else {
-            fprintf(stderr, "Unexpected token: %s\n", parser->tokens[parser->current].lexeme);
+            fprintf(stderr, "Unexpected token parsing ast: %s\n", parser->tokens[parser->current].lexeme);
             parser_advance(parser);
         }
     }

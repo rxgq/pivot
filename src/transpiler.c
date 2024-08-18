@@ -22,6 +22,8 @@ const char* ast_type_to_string(AST_TYPE type) {
             return "AST_BOOL";
         case AST_LOGICAL_EXPR:
             return "AST_LOGICAL_EXPR";
+        case AST_ASSIGNMENT_EXPR:
+            return "ASSIGNMENT_EXPR";
         default:
             return "UNKNOWN_AST_TYPE";
     }
@@ -89,6 +91,15 @@ void generate_var_dec(AST_NODE *node, FILE *output) {
     fprintf(output, ";\n");
 }
 
+void generate_assignment_expr(AST_NODE *node, FILE *fptr) {
+    AssignmentExpr *expr = &node->node.assignment_expr;
+
+    fprintf(fptr, expr->identifier);
+    fprintf(fptr, "=");
+    generate_expression(expr->val, fptr);
+    fprintf(fptr, ";\n");
+}
+
 void generate_if_stmt(AST_NODE *node, FILE *fptr) {
     IfStmtExpr *expr = &node->node.if_stmt_expr;
 
@@ -113,6 +124,10 @@ void generate_stmt(AST_NODE *node, FILE *fptr) {
             generate_if_stmt(node, fptr);
             break;
 
+        case AST_ASSIGNMENT_EXPR:
+            generate_assignment_expr(node, fptr);
+            break;
+
         default: fprintf(fptr, ast_type_to_string(node->type));
     }
 }
@@ -132,7 +147,7 @@ void generate(Program *ast) {
         exit(EXIT_FAILURE);
     }
 
-    fprintf(fptr, "#include <stdio.h>\n\n#include <stdbool.h>\nint main(int argc, char *argv[]){\n");
+    fprintf(fptr, "#include <stdio.h>\n#include <stdbool.h>\n\nint main(int argc, char *argv[]){\n");
 
     for (size_t i = 0; i < ast->count; i++) {
         generate_stmt(ast->body[i], fptr);
