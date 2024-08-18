@@ -12,5 +12,6 @@ typedef struct {
 Parser *init_parser(Token *tokens);
 Program *parse_ast(Parser *parser);
 AST_NODE *parse_additive(Parser *parser);
+AST_NODE *parse_stmt(Parser *parser);
 
 #endif

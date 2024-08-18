@@ -3,6 +3,10 @@
 #include "ast.h"
 #include "token.h"
 
+void print_bool_expr(BoolExpr *expr, int indent_level) {
+    printf("%*sBoolExpr(%s)\n", indent_level, "", expr->value);
+}
+
 void print_numeric_expr(NumericExpr *expr, int indent_level) {
     printf("%*sNumericExpr(%s)\n", indent_level, "", expr->value);
 }
@@ -13,6 +17,28 @@ void print_string_expr(StringExpr *expr, int indent_level) {
 
 void print_identifier_expr(IdentifierExpr *expr, int indent_level) {
     printf("%*sIdentifierExpr(%s)\n", indent_level, "", expr->value);
+}
+
+void print_if_stmt(IfStmtExpr *expr, int indent_level) {
+    printf("%*sIfStmt(\n", indent_level, "");
+
+    printf("%*sCondition:\n", indent_level + 2, "");
+    print_ast_node(expr->condition, indent_level + 4);
+
+    printf("%*sBody:\n", indent_level + 2, "");
+    for (size_t i = 0; i < expr->body_count; i++) {
+        print_ast_node(expr->consequent[i], indent_level + 4);
+    }
+
+    printf("%*s)\n", indent_level, "");
+}
+
+void print_logical_expr(LogicalExpr *expr, int indent_level) {
+    printf("%*sLogicalExpr(\n", indent_level, "");
+    print_ast_node(expr->left, indent_level + 2);
+    printf("%*s%s\n", indent_level + 2, "", expr->op);
+    print_ast_node(expr->right, indent_level + 2);
+    printf("%*s)\n", indent_level, "");
 }
 
 void print_binary_expr(BinaryExpr *expr, int indent_level) {
@@ -45,6 +71,9 @@ void print_ast_node(AST_NODE *node, int indent_level) {
         case AST_STRING:
             print_string_expr(&node->node.string_expr, indent_level);
             break;
+        case AST_BOOL:
+            print_bool_expr(&node->node.bool_expr, indent_level);
+            break;
         case AST_IDENTIFIER:
             print_identifier_expr(&node->node.identifier_expr, indent_level);
             break;
@@ -54,7 +83,12 @@ void print_ast_node(AST_NODE *node, int indent_level) {
         case AST_VAR_DEC:
             print_var_dec(&node->node.var_dec_expr, indent_level);
             break;
-
+        case AST_IF_STMT:
+            print_if_stmt(&node->node.if_stmt_expr, indent_level);
+            break;
+        case AST_LOGICAL_EXPR:
+            print_logical_expr(&node->node.logical_expr, indent_level);
+            break;
         default:
             printf("%*sUnknown AST_NODE type\n", indent_level, "");
             break;

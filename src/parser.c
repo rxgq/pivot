@@ -49,6 +49,10 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
         case AST_STRING:
             node->node.string_expr = *(StringExpr *)ast_node;
             break;
+        
+        case AST_BOOL:
+            node->node.bool_expr = *(BoolExpr *)ast_node;
+            break;
 
         case AST_IDENTIFIER:
             node->node.identifier_expr = *(IdentifierExpr *)ast_node;
@@ -60,6 +64,14 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
 
         case AST_VAR_DEC:
             node->node.var_dec_expr = *(VarDecExpr *)ast_node;
+            break;
+
+        case AST_IF_STMT:
+            node->node.if_stmt_expr = *(IfStmtExpr *)ast_node;
+            break;
+
+        case AST_LOGICAL_EXPR:
+            node->node.logical_expr = *(LogicalExpr *)ast_node;
             break;
 
         default:
@@ -91,11 +103,18 @@ AST_NODE *parse_primary(Parser *parser) {
         NumericExpr expr = *(NumericExpr *)malloc(sizeof(NumericExpr));
         expr.value = strdup(curr.lexeme);
         return init_node(AST_NUMERIC, &expr);
-    } else if (curr.type == STRING) {
-        StringExpr expr= *(StringExpr *)malloc(sizeof(StringExpr));;
+    } 
+    else if (curr.type == STRING) {
+        StringExpr expr = *(StringExpr *)malloc(sizeof(StringExpr));;
         expr.value = strdup(curr.lexeme);
         return init_node(AST_STRING, &expr);
-    } else if (curr.type == IDENTIFIER) {
+    } 
+    else if (curr.type == FALSE_TOK || curr.type == TRUE_TOK) {
+        BoolExpr expr = *(BoolExpr *)malloc(sizeof(BoolExpr));
+        expr.value = strdup(curr.lexeme);
+        return init_node(AST_BOOL, &expr);
+    }
+    else if (curr.type == IDENTIFIER) {
         IdentifierExpr expr= *(IdentifierExpr *)malloc(sizeof(IdentifierExpr));;
         expr.value = strdup(curr.lexeme);
         return init_node(AST_IDENTIFIER, &expr);
@@ -146,10 +165,51 @@ AST_NODE *parse_additive(Parser *parser) {
     return left;
 }
 
-AST_NODE *parse_expr(Parser *parser) {
-    return parse_additive(parser);
+AST_NODE *parse_logical_and(Parser *parser) {
+    AST_NODE *left = parse_primary(parser);
+
+    while (match(parser, "and")) {
+        Token curr = parser->tokens[parser->current];
+        char *op = strdup(curr.lexeme);
+        parser_advance(parser);
+
+        AST_NODE *right = parse_primary(parser);
+
+        LogicalExpr *expr = (LogicalExpr *)malloc(sizeof(LogicalExpr));
+        expr->left = left;
+        expr->op = op;
+        expr->right = right;
+
+        left = init_node(AST_LOGICAL_EXPR, expr);
+    }
+
+    return left;
 }
 
+AST_NODE *parse_logical_or(Parser *parser) {
+    AST_NODE *left = parse_logical_and(parser);
+
+    while (match(parser, "or")) {
+        Token curr = parser->tokens[parser->current];
+        char *op = strdup(curr.lexeme);
+        parser_advance(parser);
+
+        AST_NODE *right = parse_logical_and(parser);
+
+        LogicalExpr *expr = (LogicalExpr *)malloc(sizeof(LogicalExpr));
+        expr->left = left;
+        expr->op = op;
+        expr->right = right;
+
+        left = init_node(AST_LOGICAL_EXPR, expr);
+    }
+
+    return left;
+}
+
+AST_NODE *parse_expr(Parser *parser) {
+    return parse_logical_or(parser);
+}
 
 AST_NODE *parse_var_dec(Parser *parser) {
     parser_advance(parser);
@@ -175,6 +235,42 @@ AST_NODE *parse_var_dec(Parser *parser) {
     return init_node(AST_VAR_DEC, expr);
 }
 
+AST_NODE *parse_if_stmt(Parser *parser) {
+    parser_advance(parser);
+
+    AST_NODE *condition = parse_expr(parser);
+
+    expect_as(parser, LBRACE);
+
+    size_t capacity = 1;
+    size_t count = 0;
+    AST_NODE **consequent = (AST_NODE **)malloc(capacity * sizeof(AST_NODE *));
+    
+    while (!match(parser, "}")) {
+        if (count >= capacity) {
+            capacity *= 2;
+            consequent = (AST_NODE **)realloc(consequent, capacity * sizeof(AST_NODE *));
+        }
+
+        AST_NODE *stmt = parse_stmt(parser);
+        if (stmt) {
+            consequent[count++] = stmt;
+        } else {
+            fprintf(stderr, "Unexpected token in if statement body: %s\n", parser->tokens[parser->current].lexeme);
+            parser_advance(parser);
+        }
+    }
+    expect_as(parser, RBRACE);
+
+    IfStmtExpr *expr = (IfStmtExpr *)malloc(sizeof(IfStmtExpr));
+    expr->condition = condition;
+    expr->consequent = consequent;
+    expr->body_count = count;
+
+    return init_node(AST_IF_STMT, expr);
+}
+
+
 AST_NODE *parse_stmt(Parser *parser) {
     TokenType curr = parser->tokens[parser->current].type;
 
@@ -182,6 +278,9 @@ AST_NODE *parse_stmt(Parser *parser) {
         case LET:
             return parse_var_dec(parser);
             break;
+        
+        case IF:
+            return parse_if_stmt(parser);
 
         case IDENTIFIER:
         case NUMERIC:

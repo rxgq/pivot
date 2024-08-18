@@ -8,5 +8,6 @@ typedef struct {
 } Transpiler;
 
 void generate(Program *ast);
+void generate_stmt(AST_NODE *node, FILE *fptr);
 
 #endif

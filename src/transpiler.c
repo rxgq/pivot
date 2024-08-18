@@ -16,6 +16,12 @@ const char* ast_type_to_string(AST_TYPE type) {
             return "AST_BINARY_EXPR";
         case AST_VAR_DEC:
             return "AST_VAR_DEC";
+        case AST_IF_STMT:
+            return "AST_IF_STMT";
+        case AST_BOOL:
+            return "AST_BOOL";
+        case AST_LOGICAL_EXPR:
+            return "AST_LOGICAL_EXPR";
         default:
             return "UNKNOWN_AST_TYPE";
     }
@@ -35,10 +41,27 @@ void generate_expression(AST_NODE *node, FILE *output) {
             fprintf(output, "%s", node->node.identifier_expr.value);
             break;
 
+        case AST_BOOL:
+            fprintf(output, "%s", node->node.bool_expr.value);
+            break;
+
         case AST_BINARY_EXPR:
             generate_expression(node->node.binary_expr.left, output);
             fprintf(output, " %s ", node->node.binary_expr.op);
             generate_expression(node->node.binary_expr.right, output);
+            break;
+
+        case AST_LOGICAL_EXPR:
+            generate_expression(node->node.logical_expr.left, output);
+            if (strcmp(node->node.logical_expr.op, "or") == 0) {
+                fprintf(output, " || ");
+            } else if (strcmp(node->node.logical_expr.op, "and") == 0) {
+                fprintf(output, " && ");    
+            } else {
+                fprintf(stderr, "Unknown logical operator: %s\n", node->node.logical_expr.op);
+                exit(EXIT_FAILURE);
+            }
+            generate_expression(node->node.logical_expr.right, output);
             break;
 
         default:
@@ -48,29 +71,46 @@ void generate_expression(AST_NODE *node, FILE *output) {
 }
 
 void generate_var_dec(AST_NODE *node, FILE *output) {
-    VarDecExpr *var_dec = &node->node.var_dec_expr;
+    VarDecExpr *expr = &node->node.var_dec_expr;
 
-
-    if (var_dec->type.type == STRING) {
-        fprintf(output, "%s %s = ", "char*", var_dec->identifier);
-    } else if (var_dec->type.type == INT) {
-        fprintf(output, "%s %s = ", "int", var_dec->identifier);
-    } else if (var_dec->type.type == CHR) {
-        fprintf(output, "%s %s = ", "char", var_dec->identifier);
-    } else if (var_dec->type.type == FLT) {
-        fprintf(output, "%s %s = ", "float", var_dec->identifier);
+    if (expr->type.type == STRING) {
+        fprintf(output, "%s %s = ", "char*", expr->identifier);
+    } else if (expr->type.type == INT) {
+        fprintf(output, "%s %s = ", "int", expr->identifier);
+    } else if (expr->type.type == CHR) {
+        fprintf(output, "%s %s = ", "char", expr->identifier);
+    } else if (expr->type.type == FLT) {
+        fprintf(output, "%s %s = ", "float", expr->identifier);
     } else {
-        fprintf(output, "%s %s = ", "UNKOWN*", var_dec->identifier);
+        fprintf(output, "%s %s = ", "UNKOWN*", expr->identifier);
     }
 
-    generate_expression(var_dec->val, output);
+    generate_expression(expr->val, output);
     fprintf(output, ";\n");
+}
+
+void generate_if_stmt(AST_NODE *node, FILE *fptr) {
+    IfStmtExpr *expr = &node->node.if_stmt_expr;
+
+    fprintf(fptr, "if (");
+    generate_expression(expr->condition, fptr);
+    fprintf(fptr, ") ");
+
+    fprintf(fptr, "{\n");
+    for (size_t i = 0; i < expr->body_count; i++) {
+        generate_stmt(expr->consequent[i], fptr);
+    }
+    fprintf(fptr, "}\n");
 }
 
 void generate_stmt(AST_NODE *node, FILE *fptr) {
     switch (node->type) {
         case AST_VAR_DEC:
             generate_var_dec(node, fptr);
+            break;
+
+        case AST_IF_STMT:
+            generate_if_stmt(node, fptr);
             break;
 
         default: fprintf(fptr, ast_type_to_string(node->type));
@@ -92,7 +132,7 @@ void generate(Program *ast) {
         exit(EXIT_FAILURE);
     }
 
-    fprintf(fptr, "#include <stdio.h>\n\nint main(int argc, char *argv[]){\n");
+    fprintf(fptr, "#include <stdio.h>\n\n#include <stdbool.h>\nint main(int argc, char *argv[]){\n");
 
     for (size_t i = 0; i < ast->count; i++) {
         generate_stmt(ast->body[i], fptr);
