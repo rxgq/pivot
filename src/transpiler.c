@@ -24,6 +24,8 @@ const char* ast_type_to_string(AST_TYPE type) {
             return "AST_LOGICAL_EXPR";
         case AST_ASSIGNMENT_EXPR:
             return "ASSIGNMENT_EXPR";
+        case AST_BOOL_DEC:
+            return "AST_BOOL_DEC";
         default:
             return "UNKNOWN_AST_TYPE";
     }
@@ -44,6 +46,10 @@ void generate_expression(AST_NODE *node, FILE *output) {
             break;
 
         case AST_BOOL:
+            fprintf(output, "%s", node->node.bool_expr.value);
+            break;
+
+        case AST_BOOL_DEC:
             fprintf(output, "%s", node->node.bool_expr.value);
             break;
 
@@ -79,10 +85,12 @@ void generate_var_dec(AST_NODE *node, FILE *output) {
         fprintf(output, "%s %s = ", "char*", expr->identifier);
     } else if (expr->type.type == INT) {
         fprintf(output, "%s %s = ", "int", expr->identifier);
-    } else if (expr->type.type == CHR) {
+    } else if (expr->type.type == CHAR) {
         fprintf(output, "%s %s = ", "char", expr->identifier);
     } else if (expr->type.type == FLT) {
         fprintf(output, "%s %s = ", "float", expr->identifier);
+    } else if (expr->type.type == BOOL) {
+        fprintf(output, "%s %s = ", "bool", expr->identifier);
     } else {
         fprintf(output, "%s %s = ", "UNKOWN*", expr->identifier);
     }
@@ -114,6 +122,12 @@ void generate_if_stmt(AST_NODE *node, FILE *fptr) {
     fprintf(fptr, "}\n");
 }
 
+void generate_echo_expr(AST_NODE *node, FILE *fptr) {
+    fprintf(fptr, "printf(");
+    generate_expression(node->node.echo_expr.expr, fptr);
+    fprintf(fptr, ");\n");
+}
+
 void generate_stmt(AST_NODE *node, FILE *fptr) {
     switch (node->type) {
         case AST_VAR_DEC:
@@ -126,6 +140,10 @@ void generate_stmt(AST_NODE *node, FILE *fptr) {
 
         case AST_ASSIGNMENT_EXPR:
             generate_assignment_expr(node, fptr);
+            break;
+
+        case AST_ECHO_EXPR:
+            generate_echo_expr(node, fptr);
             break;
 
         default: fprintf(fptr, ast_type_to_string(node->type));

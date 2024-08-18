@@ -78,6 +78,14 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
             node->node.assignment_expr = *(AssignmentExpr *)ast_node;
             break;
 
+        case AST_ECHO_EXPR:
+            node->node.echo_expr = *(EchoExpr *)ast_node;
+            break;
+
+        case AST_BOOL_DEC:
+            node->node.bool_dec_expr = *(BoolDecExpr *)ast_node;
+            break;
+
         default:
             free(node);
             fprintf(stderr, "Unknown AST_TYPE\n");
@@ -117,6 +125,11 @@ AST_NODE *parse_primary(Parser *parser) {
         BoolExpr expr = *(BoolExpr *)malloc(sizeof(BoolExpr));
         expr.value = strdup(curr.lexeme);
         return init_node(AST_BOOL, &expr);
+    }
+    else if (curr.type == BOOL) {
+        BoolDecExpr expr = *(BoolDecExpr *)malloc(sizeof(BoolDecExpr));
+        expr.value = strdup(curr.lexeme);
+        return init_node(AST_BOOL_DEC, &expr);
     }
     else if (curr.type == IDENTIFIER) {
         IdentifierExpr expr= *(IdentifierExpr *)malloc(sizeof(IdentifierExpr));
@@ -295,6 +308,18 @@ AST_NODE *parse_if_stmt(Parser *parser) {
     return init_node(AST_IF_STMT, expr);
 }
 
+AST_NODE *parse_echo(Parser *parser) {
+    expect_as(parser, ECHO);
+
+    AST_NODE *expr = parse_expr(parser);
+
+    EchoExpr *echo_expr = (EchoExpr *)malloc(sizeof(EchoExpr));
+    echo_expr->expr = expr;
+
+    expect_as(parser, SEMICOLON);
+
+    return init_node(AST_ECHO_EXPR, echo_expr);
+}
 
 AST_NODE *parse_stmt(Parser *parser) {
     TokenType curr = parser->tokens[parser->current].type;
@@ -302,10 +327,12 @@ AST_NODE *parse_stmt(Parser *parser) {
     switch (curr) {
         case LET:
             return parse_var_dec(parser);
-            break;
         
         case IF:
             return parse_if_stmt(parser);
+
+        case ECHO:
+            return parse_echo(parser);
 
         case IDENTIFIER:
         case NUMERIC:

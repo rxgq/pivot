@@ -8,13 +8,15 @@ typedef struct AST_NODE AST_NODE;
 typedef enum {
     AST_NUMERIC,
     AST_STRING,
-    AST_BOOL,
+    AST_BOOL, // true / false
+    AST_BOOL_DEC, // let x: bool = false;
     AST_IDENTIFIER,
     AST_BINARY_EXPR,
     AST_VAR_DEC,
     AST_IF_STMT,
     AST_LOGICAL_EXPR,
-    AST_ASSIGNMENT_EXPR
+    AST_ASSIGNMENT_EXPR,
+    AST_ECHO_EXPR,
 } AST_TYPE;
 
 typedef struct {
@@ -32,6 +34,10 @@ typedef struct {
 typedef struct {
     char *value;
 } IdentifierExpr;
+
+typedef struct {
+    char *value;
+} BoolDecExpr;
 
 typedef struct {
     AST_NODE *left;
@@ -66,6 +72,10 @@ typedef struct {
     AST_NODE *val;
 } AssignmentExpr;
 
+typedef struct {
+    AST_NODE *expr;
+} EchoExpr;
+
 typedef struct AST_NODE {
     AST_TYPE type;
 
@@ -79,6 +89,8 @@ typedef struct AST_NODE {
         LogicalExpr logical_expr;
         AssignmentExpr assignment_expr;
         BoolExpr bool_expr;
+        EchoExpr echo_expr;
+        BoolDecExpr bool_dec_expr;
     } node;
 
 } AST_NODE;

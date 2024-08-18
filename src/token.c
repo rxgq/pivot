@@ -48,8 +48,10 @@ char *print_token(TokenType type) {
         case FALSE_TOK: return "FALSE_TOK";
         case INT: return "INT";
         case STR: return "STR";
-        case CHR: return "CHR";
+        case CHAR: return "CHAR";
         case FLT: return "FLT";
+        case ECHO: return "ECHO";
+        case BOOL: return "BOOL";
         default: return "UNKNOWN";
     }
 }

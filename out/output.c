@@ -2,11 +2,10 @@
 #include <stdbool.h>
 
 int main(int argc, char *argv[]){
-if (true || false && false || true) {
-int x = 10;
-x=10;
-char* y = "Hello World!";
-y="test";
+bool print = false;
+char* msg = "Hello World!";
+if (print) {
+printf("str");
 }
 return 0;
 }

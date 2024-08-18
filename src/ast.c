@@ -67,6 +67,13 @@ void print_var_dec(VarDecExpr *expr, int indent_level) {
     printf("%*s)\n", indent_level, "");
 }
 
+void print_echo_expr(EchoExpr *expr, int indent_level) {
+    printf("%*sEchoExpr(\n", indent_level, "");
+    print_ast_node(expr->expr, indent_level + 2);
+    printf("%*s)\n", indent_level, "");
+}
+
+
 void print_ast_node(AST_NODE *node, int indent_level) {
     if (!node) {
         printf("%*sNULL\n", indent_level, "");
@@ -100,6 +107,9 @@ void print_ast_node(AST_NODE *node, int indent_level) {
             break;
         case AST_ASSIGNMENT_EXPR:
             print_assignment_expr(&node->node.assignment_expr, indent_level);
+            break;
+        case AST_ECHO_EXPR:
+            print_echo_expr(&node->node.echo_expr, indent_level);
             break;
         default:
             printf("%*sUnknown AST_NODE type\n", indent_level, "");

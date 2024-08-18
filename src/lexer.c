@@ -15,9 +15,11 @@ KeywordMap keyword_map[] = {
     {"true", TRUE_TOK},
     {"false", FALSE_TOK},
     {"int", INT},
-    {"chr", CHR},
+    {"char", CHAR},
     {"flt", FLT},
     {"str", STRING},
+    {"bool", BOOL},
+    {"echo", ECHO},
     {"END_KEYWORD", BAD_TOKEN}
 };
 
