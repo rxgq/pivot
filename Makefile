@@ -1,5 +1,5 @@
 CFLAGS = -Wall -g -Iinclude
-OBJS = main.o lexer.o token.o parser.o ast.o
+OBJS = main.o lexer.o token.o parser.o ast.o transpiler.o
 TARGET = main
 
 $(TARGET): $(OBJS)
@@ -19,6 +19,10 @@ parser.o: src/parser.c include/parser.h
 
 ast.o: src/ast.c include/ast.h
 	gcc $(CFLAGS) -c src/ast.c
+
+transpiler.o: src/transpiler.c include/transpiler.h
+	gcc $(CFLAGS) -c src/transpiler.c
+
 
 clean:
 	del /f $(OBJS) $(TARGET)

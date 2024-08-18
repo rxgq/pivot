@@ -3,6 +3,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "ast.h"
+#include "transpiler.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -27,8 +28,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    fread(buffer, 1, sz, fptr);
-    buffer[sz] = '\0';
+    size_t read_size = fread(buffer, 1, sz, fptr);
+    buffer[read_size] = '\0';
     fclose(fptr);
 
     Lexer *lexer = init_lexer(buffer);
@@ -38,6 +39,8 @@ int main(int argc, char *argv[]) {
     Parser *parser = init_parser(tokens);
     Program* ast = parse_ast(parser);
     print_ast(ast);
+
+    generate(ast);
 
     free(buffer);
     return 0;

@@ -150,6 +150,7 @@ AST_NODE *parse_expr(Parser *parser) {
     return parse_additive(parser);
 }
 
+
 AST_NODE *parse_var_dec(Parser *parser) {
     parser_advance(parser);
 
@@ -177,16 +178,21 @@ AST_NODE *parse_var_dec(Parser *parser) {
 AST_NODE *parse_stmt(Parser *parser) {
     TokenType curr = parser->tokens[parser->current].type;
 
-    if (curr == LET) {
-        return parse_var_dec(parser);
-    } else if (curr == IDENTIFIER || curr == NUMERIC || curr == STRING) {
-        return parse_expr(parser);
-    } else {
-        fprintf(stderr, "Unexpected token: %s\n", parser->tokens[parser->current].lexeme);
-        exit(EXIT_FAILURE);
+    switch (curr) {
+        case LET:
+            return parse_var_dec(parser);
+            break;
+
+        case IDENTIFIER:
+        case NUMERIC:
+        case STRING:
+            return parse_expr(parser);
+
+        default:
+            fprintf(stderr, "Unexpected token: %s\n", parser->tokens[parser->current].lexeme);
+            exit(EXIT_FAILURE);
     }
 }
-
 
 Program *parse_ast(Parser *parser) {
     size_t capacity = 10;

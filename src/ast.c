@@ -26,11 +26,11 @@ void print_binary_expr(BinaryExpr *expr, int indent_level) {
 void print_var_dec(VarDecExpr *expr, int indent_level) {
     printf("%*sVarDecExpr(\n", indent_level, "");
     printf("%*sIdentifier: %s\n", indent_level + 2, "", expr->identifier);
+    printf("%*sType: %s\n", indent_level + 2, "", print_token( expr->type.type));
     printf("%*sValue:\n", indent_level + 2, "");
     print_ast_node(expr->val, indent_level + 4);
     printf("%*s)\n", indent_level, "");
 }
-
 
 void print_ast_node(AST_NODE *node, int indent_level) {
     if (!node) {
