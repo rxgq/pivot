@@ -1,4 +1,4 @@
-if true {
+if true or false and false or true {
     let x: int = 10;
     x = 10;
 

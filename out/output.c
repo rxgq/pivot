@@ -2,7 +2,7 @@
 #include <stdbool.h>
 
 int main(int argc, char *argv[]){
-if (true) {
+if (true || false && false || true) {
 int x = 10;
 x=10;
 char* y = "Hello World!";

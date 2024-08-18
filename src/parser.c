@@ -92,7 +92,7 @@ AST_NODE *parse_primary(Parser *parser) {
     
     if (strcmp(curr.lexeme, "(") == 0) {
         parser_advance(parser);
-        AST_NODE *expr = parse_additive(parser);
+        AST_NODE *expr = parse_logical_or(parser);
         
         if (!match(parser, ")")) {
             fprintf(stderr, "Expected ')' after expression\n");
@@ -170,7 +170,7 @@ AST_NODE *parse_additive(Parser *parser) {
 }
 
 AST_NODE *parse_logical_and(Parser *parser) {
-    AST_NODE *left = parse_primary(parser);
+    AST_NODE *left = parse_multiplicative(parser);
 
     while (match(parser, "and")) {
         Token curr = parser->tokens[parser->current];
@@ -263,7 +263,7 @@ AST_NODE *parse_var_dec(Parser *parser) {
 AST_NODE *parse_if_stmt(Parser *parser) {
     parser_advance(parser);
 
-    AST_NODE *condition = parse_expr(parser);
+    AST_NODE *condition = parse_logical_or(parser);
 
     expect_as(parser, LBRACE);
 

@@ -14,5 +14,6 @@ Program *parse_ast(Parser *parser);
 AST_NODE *parse_additive(Parser *parser);
 AST_NODE *parse_stmt(Parser *parser);
 AST_NODE *parse_expr(Parser *parser);
+AST_NODE *parse_logical_or(Parser *parser);
 
 #endif
