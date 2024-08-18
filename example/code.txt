@@ -1,7 +1,5 @@
-let print: bool = false;
-let msg: str = "Hello World!";
+let x: bool = not true;
 
-if print {
-    echo str;
+if x == (not false) or false {
+    
 }
-

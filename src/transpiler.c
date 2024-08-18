@@ -31,6 +31,14 @@ const char* ast_type_to_string(AST_TYPE type) {
     }
 }
 
+void generate_comparison_expr(AST_NODE *node, FILE *output) {
+    ComparisonExpr *expr = &node->node.comparison_expr;
+
+    generate_expression(expr->left, output);
+    fprintf(output, " %s ", expr->op);
+    generate_expression(expr->right, output);
+}
+
 void generate_expression(AST_NODE *node, FILE *output) {
     switch (node->type) {
         case AST_NUMERIC:
@@ -53,6 +61,13 @@ void generate_expression(AST_NODE *node, FILE *output) {
             fprintf(output, "%s", node->node.bool_expr.value);
             break;
 
+        case AST_UNARY_EXPR:
+            if (strcmp(node->node.unary_expr.op, "not") == 0) {
+                fprintf(output, "%s", "!");
+            }
+            generate_expression(node->node.unary_expr.operand, output);
+            break;
+
         case AST_BINARY_EXPR:
             generate_expression(node->node.binary_expr.left, output);
             fprintf(output, " %s ", node->node.binary_expr.op);
@@ -70,6 +85,10 @@ void generate_expression(AST_NODE *node, FILE *output) {
                 exit(EXIT_FAILURE);
             }
             generate_expression(node->node.logical_expr.right, output);
+            break;
+
+        case AST_COMPARISON_EXPR:
+            generate_comparison_expr(node, output);
             break;
 
         default:

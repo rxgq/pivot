@@ -19,6 +19,22 @@ void print_identifier_expr(IdentifierExpr *expr, int indent_level) {
     printf("%*sIdentifierExpr(%s)\n", indent_level, "", expr->value);
 }
 
+void print_comparison_expr(ComparisonExpr *expr, int indent_level) {
+    printf("%*sComparisonExpr(\n", indent_level, "");
+    print_ast_node(expr->left, indent_level + 2);
+    printf("%*s%s\n", indent_level + 2, "", expr->op);
+    print_ast_node(expr->right, indent_level + 2);
+    printf("%*s)\n", indent_level, "");
+}
+
+void print_unary_expr(UnaryExpr *expr, int indent_level) {
+    printf("%*sUnaryExpr(\n", indent_level, "");
+    printf("%*sOperator: %s\n", indent_level + 2, "", expr->op);
+    printf("%*sOperand:\n", indent_level + 2, "");
+    print_ast_node(expr->operand, indent_level + 4);
+    printf("%*s)\n", indent_level, "");
+}
+
 void print_assignment_expr(AssignmentExpr *expr, int indent_level) {
     printf("%*sAssignmentExpr(\n", indent_level, "");
     printf("%*sIdentifier: %s\n", indent_level + 2, "", expr->identifier);
@@ -110,6 +126,12 @@ void print_ast_node(AST_NODE *node, int indent_level) {
             break;
         case AST_ECHO_EXPR:
             print_echo_expr(&node->node.echo_expr, indent_level);
+            break;
+        case AST_UNARY_EXPR:
+            print_unary_expr(&node->node.unary_expr, indent_level);
+            break;
+        case AST_COMPARISON_EXPR:
+            print_comparison_expr(&node->node.comparison_expr, indent_level);
             break;
         default:
             printf("%*sUnknown AST_NODE type\n", indent_level, "");

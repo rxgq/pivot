@@ -17,6 +17,8 @@ typedef enum {
     AST_LOGICAL_EXPR,
     AST_ASSIGNMENT_EXPR,
     AST_ECHO_EXPR,
+    AST_UNARY_EXPR,
+    AST_COMPARISON_EXPR,
 } AST_TYPE;
 
 typedef struct {
@@ -76,6 +78,17 @@ typedef struct {
     AST_NODE *expr;
 } EchoExpr;
 
+typedef struct {
+    char *op;
+    AST_NODE *operand;
+} UnaryExpr;
+
+typedef struct {
+    AST_NODE *left;
+    char *op;
+    AST_NODE *right;
+} ComparisonExpr;
+
 typedef struct AST_NODE {
     AST_TYPE type;
 
@@ -91,6 +104,8 @@ typedef struct AST_NODE {
         BoolExpr bool_expr;
         EchoExpr echo_expr;
         BoolDecExpr bool_dec_expr;
+        UnaryExpr unary_expr;
+        ComparisonExpr comparison_expr;
     } node;
 
 } AST_NODE;

@@ -2,10 +2,8 @@
 #include <stdbool.h>
 
 int main(int argc, char *argv[]){
-bool print = false;
-char* msg = "Hello World!";
-if (print) {
-printf("str");
+bool x = !true;
+if (x == !false || false) {
 }
 return 0;
 }

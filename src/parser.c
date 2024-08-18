@@ -86,6 +86,14 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
             node->node.bool_dec_expr = *(BoolDecExpr *)ast_node;
             break;
 
+        case AST_UNARY_EXPR:
+            node->node.unary_expr = *(UnaryExpr *)ast_node;
+            break;
+
+        case AST_COMPARISON_EXPR:
+            node->node.comparison_expr = *(ComparisonExpr *)ast_node;
+            break;
+
         default:
             free(node);
             fprintf(stderr, "Unknown AST_TYPE\n");
@@ -140,15 +148,33 @@ AST_NODE *parse_primary(Parser *parser) {
     }
 }
 
+AST_NODE *parse_unary(Parser *parser) {
+    Token curr = parser->tokens[parser->current];
+
+    if (curr.type == NOT) {
+        parser_advance(parser);
+
+        AST_NODE *operand = parse_unary(parser);
+
+        UnaryExpr *unary_expr = (UnaryExpr *)malloc(sizeof(UnaryExpr));
+        unary_expr->op = strdup(curr.lexeme);
+        unary_expr->operand = operand;
+
+        return init_node(AST_UNARY_EXPR, unary_expr);
+    }
+
+    return parse_primary(parser);
+}
+
 AST_NODE *parse_multiplicative(Parser *parser) {
-    AST_NODE *left = parse_primary(parser);
+    AST_NODE *left = parse_unary(parser);
 
     while (match(parser, "*") || match(parser, "/") || match(parser, "%")) {
         Token curr = parser->tokens[parser->current];
         char *op = strdup(curr.lexeme);
         parser_advance(parser);
 
-        AST_NODE *right = parse_primary(parser);
+        AST_NODE *right = parse_unary(parser);
 
         BinaryExpr *expr = (BinaryExpr *)malloc(sizeof(BinaryExpr));
         expr->left = left;
@@ -182,15 +208,37 @@ AST_NODE *parse_additive(Parser *parser) {
     return left;
 }
 
+AST_NODE *parse_comparison(Parser *parser) {
+    AST_NODE *left = parse_additive(parser);
+
+    while (match(parser, "==") || match(parser, "!=") || match(parser, ">") || match(parser, ">=") || match(parser, "<") || match(parser, "<=")) {
+        Token curr = parser->tokens[parser->current];
+        char *op = strdup(curr.lexeme);
+        parser_advance(parser);
+
+        AST_NODE *right = parse_additive(parser);
+
+        ComparisonExpr *expr = (ComparisonExpr *)malloc(sizeof(ComparisonExpr));
+        expr->left = left;
+        expr->op = op;
+        expr->right = right;
+
+        left = init_node(AST_COMPARISON_EXPR, expr);
+    }
+
+    return left;
+}
+
+
 AST_NODE *parse_logical_and(Parser *parser) {
-    AST_NODE *left = parse_multiplicative(parser);
+    AST_NODE *left = parse_comparison(parser);
 
     while (match(parser, "and")) {
         Token curr = parser->tokens[parser->current];
         char *op = strdup(curr.lexeme);
         parser_advance(parser);
 
-        AST_NODE *right = parse_primary(parser);
+        AST_NODE *right = parse_comparison(parser);
 
         LogicalExpr *expr = (LogicalExpr *)malloc(sizeof(LogicalExpr));
         expr->left = left;
@@ -225,7 +273,7 @@ AST_NODE *parse_logical_or(Parser *parser) {
 }
 
 AST_NODE *parse_assignment(Parser *parser) {
-    AST_NODE *left = parse_primary(parser);
+    AST_NODE *left = parse_logical_or(parser);
 
     if (match(parser, "=")) {
         parser_advance(parser);
@@ -243,7 +291,6 @@ AST_NODE *parse_assignment(Parser *parser) {
 
     return left;
 }
-
 
 AST_NODE *parse_expr(Parser *parser) {
     return parse_assignment(parser);
@@ -263,6 +310,7 @@ AST_NODE *parse_var_dec(Parser *parser) {
     expect_as(parser, ASSIGNMENT);
 
     AST_NODE *val = parse_expr(parser);
+    print_ast_node(val, 1);
     expect_as(parser, SEMICOLON);
 
     VarDecExpr *expr = (VarDecExpr *)malloc(sizeof(VarDecExpr));
