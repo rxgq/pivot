@@ -1,1 +1,2 @@
-2 + 2
+let x: int = 10;
+let y: str = "hello";

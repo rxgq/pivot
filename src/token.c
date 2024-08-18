@@ -21,6 +21,7 @@ char *print_token(TokenType type) {
         case SEMICOLON: return "SEMICOLON";
         case COMMA: return "COMMA";
         case DOT: return "DOT";
+        case COLON: return "COLON";
         case LESST: return "LESST";
         case GREATERT: return "GREATERT";
         case LESSTEQ: return "LESSTEQ";
@@ -45,6 +46,10 @@ char *print_token(TokenType type) {
         case LET: return "LET";
         case TRUE_TOK: return "TRUE_TOK";
         case FALSE_TOK: return "FALSE_TOK";
+        case INT: return "INT";
+        case STR: return "STR";
+        case CHR: return "CHR";
+        case FLT: return "FLT";
         default: return "UNKNOWN";
     }
 }

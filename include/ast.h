@@ -1,13 +1,16 @@
 #ifndef AST_H
 #define AST_H
 
+#include "token.h"
+
 typedef struct AST_NODE AST_NODE;
 
 typedef enum {
     AST_NUMERIC,
     AST_STRING,
     AST_IDENTIFIER,
-    AST_BINARY_EXPR
+    AST_BINARY_EXPR,
+    AST_VAR_DEC,
 } AST_TYPE;
 
 typedef struct {
@@ -28,6 +31,12 @@ typedef struct {
     char *op;
 } BinaryExpr;
 
+typedef struct {
+    Token type;
+    char *identifier;
+    AST_NODE *val;
+} VarDecExpr;
+
 typedef struct AST_NODE {
     AST_TYPE type;
 
@@ -36,6 +45,7 @@ typedef struct AST_NODE {
         StringExpr string_expr;
         IdentifierExpr identifier_expr;
         BinaryExpr binary_expr;
+        VarDecExpr var_dec_expr;
     } node;
 
 } AST_NODE;

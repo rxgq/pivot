@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "ast.h"
+#include "token.h"
 
 void print_numeric_expr(NumericExpr *expr, int indent_level) {
     printf("%*sNumericExpr(%s)\n", indent_level, "", expr->value);
@@ -22,6 +23,15 @@ void print_binary_expr(BinaryExpr *expr, int indent_level) {
     printf("%*s)\n", indent_level, "");
 }
 
+void print_var_dec(VarDecExpr *expr, int indent_level) {
+    printf("%*sVarDecExpr(\n", indent_level, "");
+    printf("%*sIdentifier: %s\n", indent_level + 2, "", expr->identifier);
+    printf("%*sValue:\n", indent_level + 2, "");
+    print_ast_node(expr->val, indent_level + 4);
+    printf("%*s)\n", indent_level, "");
+}
+
+
 void print_ast_node(AST_NODE *node, int indent_level) {
     if (!node) {
         printf("%*sNULL\n", indent_level, "");
@@ -41,6 +51,10 @@ void print_ast_node(AST_NODE *node, int indent_level) {
         case AST_BINARY_EXPR:
             print_binary_expr(&node->node.binary_expr, indent_level);
             break;
+        case AST_VAR_DEC:
+            print_var_dec(&node->node.var_dec_expr, indent_level);
+            break;
+
         default:
             printf("%*sUnknown AST_NODE type\n", indent_level, "");
             break;

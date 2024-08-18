@@ -14,6 +14,10 @@ KeywordMap keyword_map[] = {
     {"let", LET},
     {"true", TRUE_TOK},
     {"false", FALSE_TOK},
+    {"int", INT},
+    {"chr", CHR},
+    {"flt", FLT},
+    {"str", STRING},
     {"END_KEYWORD", BAD_TOKEN}
 };
 
@@ -161,6 +165,7 @@ Token next_token(Lexer *lexer) {
         case '[': return on_single_tok(lexer, LSQBRACK, str);
         case ']': return on_single_tok(lexer, RSQBRACK, str);
         case ';': return on_single_tok(lexer, SEMICOLON, str);
+        case ':': return on_single_tok(lexer, COLON, str);
         case '+': return on_double_tok(lexer, '+', PLUS, '=', PLUSEQ);
         case '-': return on_double_tok(lexer, '-', MINUS, '=', MINUSEQ);
         case '*': return on_double_tok(lexer, '*', STAR, '=', STAREQ);
