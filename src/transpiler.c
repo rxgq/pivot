@@ -174,10 +174,39 @@ void generate_if_stmt(AST_NODE *node, FILE *fptr) {
 }
 
 void generate_echo_expr(AST_NODE *node, FILE *fptr) {
-    fprintf(fptr, "printf(");
-    generate_expression(node->node.echo_expr.expr, fptr);
-    fprintf(fptr, ");\n");
+    AST_NODE *expr = node->node.echo_expr.expr;
+    
+    switch (expr->type) {
+        case AST_NUMERIC:
+            fprintf(fptr, "printf(\"%%d\", ");
+            generate_expression(expr, fptr);
+            fprintf(fptr, ");\n");
+            break;
+
+        case AST_STRING:
+            fprintf(fptr, "printf(\"%%s\", ");
+            generate_expression(expr, fptr);
+            fprintf(fptr, ");\n");
+            break;
+
+        case AST_BOOL:
+            fprintf(fptr, "printf(\"%%s\", ");
+            fprintf(fptr, "((%s) ? \"true\" : \"false\")", expr->node.bool_expr.value);
+            fprintf(fptr, ");\n");
+            break;
+
+        case AST_IDENTIFIER:
+            fprintf(fptr, "printf(\"%%d\", ");
+            generate_expression(expr, fptr);
+            fprintf(fptr, ");\n");
+            break;
+
+        default:
+            fprintf(fptr, "printf(\"UNKNOWN TYPE\");\n");
+            break;
+    }
 }
+
 
 void generate_simple_stmt(AST_NODE *node, FILE *fptr) {
     LoopStmt *stmt = &node->node.loop_stmt;
