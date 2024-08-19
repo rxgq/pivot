@@ -31,12 +31,26 @@ const char* ast_type_to_string(AST_TYPE type) {
     }
 }
 
-void generate_comparison_expr(AST_NODE *node, FILE *output) {
+void generate_comparison_expr(AST_NODE *node, FILE *fptr) {
     ComparisonExpr *expr = &node->node.comparison_expr;
 
-    generate_expression(expr->left, output);
-    fprintf(output, " %s ", expr->op);
-    generate_expression(expr->right, output);
+    if (expr->left->type == AST_STRING || expr->right->type == AST_STRING) {
+        fprintf(fptr, "strcmp(");
+        generate_expression(expr->left, fptr);
+        fprintf(fptr, ",");
+        generate_expression(expr->right, fptr);
+        fprintf(fptr, ")==");
+        if (strcmp(expr->op, "==") == 0) {
+            fprintf(fptr, "0");
+        } else if (strcmp(expr->op, "!=") == 0) {
+            fprintf(fptr, "1");
+        }
+        return;
+    }
+
+    generate_expression(expr->left, fptr);
+    fprintf(fptr, " %s ", expr->op);
+    generate_expression(expr->right, fptr);
 }
 
 void generate_expression(AST_NODE *node, FILE *output) {
@@ -184,7 +198,7 @@ void generate(Program *ast) {
         exit(EXIT_FAILURE);
     }
 
-    fprintf(fptr, "#include <stdio.h>\n#include <stdbool.h>\n\nint main(int argc, char *argv[]){\n");
+    fprintf(fptr, "#include <stdio.h>\n#include <stdbool.h>\n#include <string.h>\n\nint main(int argc, char *argv[]){\n");
 
     for (size_t i = 0; i < ast->count; i++) {
         generate_stmt(ast->body[i], fptr);

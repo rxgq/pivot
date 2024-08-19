@@ -1,5 +1,5 @@
-let x: bool = not true;
+let x: str = "Hello World!";
 
-if x == (not false) or false {
-    
+if x != "Hello World" {
+    echo x;
 }
