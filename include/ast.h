@@ -21,7 +21,9 @@ typedef enum {
     AST_COMPARISON_EXPR,
     AST_WHILE_STMT,
     AST_LOOP_STMT,
-    AST_RETURN_STMT
+    AST_RETURN_STMT,
+    AST_PROC_STMT,
+    AST_PROC_PARAM,
 } AST_TYPE;
 
 typedef struct {
@@ -106,6 +108,20 @@ typedef struct {
     AST_NODE *expr;
 } ReturnStmt;
 
+typedef struct {
+    AST_NODE *identifier;
+    char *return_type;
+    AST_NODE **parameters;
+    AST_NODE **consequent;
+    int parameter_count;
+    int body_count;
+} ProcStmt;
+
+typedef struct {
+    char *identifier;
+    char *type;
+} ProcParam;
+
 typedef struct AST_NODE {
     AST_TYPE type;
 
@@ -126,6 +142,8 @@ typedef struct AST_NODE {
         WhileStmtExpr while_stmt_expr;
         LoopStmt loop_stmt;
         ReturnStmt return_stmt;
+        ProcStmt proc_stmt;
+        ProcParam proc_param;
     } node;
 
 } AST_NODE;

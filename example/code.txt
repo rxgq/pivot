@@ -1,2 +1,14 @@
-let x: bool = false;
-return x or false and not x;
+proc addTwo = (a: int, b: int): int {
+    while true {
+        if not false or true {
+            echo "test";
+        }
+
+        let x:int = 10;
+        echo x;
+
+        if "test" == "false" or 2 > 1 {
+            return 1;
+        }
+    }
+}

@@ -106,9 +106,17 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
             node->node.return_stmt = *(ReturnStmt *)ast_node;
             break;
 
+        case AST_PROC_STMT:
+            node->node.proc_stmt = *(ProcStmt *)ast_node;
+            break;
+
+        case AST_PROC_PARAM:
+            node->node.proc_param = *(ProcParam *)ast_node;
+            break;
+
         default:
             free(node);
-            fprintf(stderr, "Unknown AST_TYPE\n");
+            fprintf(stderr, "Unknown AST_TYPE %d\n", type);
             return NULL;
     }
 
@@ -427,7 +435,6 @@ AST_NODE *parse_return_stmt(Parser *parser) {
     ReturnStmt *stmt = (ReturnStmt *)malloc(sizeof(ReturnStmt));
     stmt->expr = expr;
 
-
     return init_node(AST_RETURN_STMT, stmt);
 }
 
@@ -445,6 +452,92 @@ AST_NODE *parse_loop_stmt(Parser *parser) {
     stmt->stmt = curr.lexeme;
 
     return init_node(AST_LOOP_STMT, stmt);
+}
+
+AST_NODE *parse_proc_param(Parser *parser) {
+    char *identifier = parser->tokens[parser->current].lexeme;
+    parser_advance(parser);
+
+    expect_as(parser, COLON);
+
+    char *type = parser->tokens[parser->current].lexeme;
+    parser_advance(parser);
+
+    ProcParam *param = (ProcParam *)malloc(sizeof(ProcParam));
+    param->identifier = identifier;
+    param->type = type;
+
+    return init_node(AST_PROC_PARAM, param);
+}
+
+AST_NODE *parse_proc_stmt(Parser *parser) {
+    parser_advance(parser);
+
+    AST_NODE *identifier = parse_primary(parser);
+
+    expect_as(parser, ASSIGNMENT);
+    expect_as(parser, LPAREN);
+
+    size_t capacity = 2;
+    size_t count = 0;
+    AST_NODE **parameters = (AST_NODE **)malloc(capacity * sizeof(AST_NODE *));
+    while (!match(parser, ")")) {
+
+        if (count >= capacity) {
+            capacity *= 2;
+            parameters = (AST_NODE **)realloc(parameters, capacity * sizeof(AST_NODE *));
+        }
+
+        AST_NODE *param = parse_proc_param(parser);
+        parameters[count++] = param;
+
+        if (match(parser, ",")) {
+            parser_advance(parser);
+        } else if (!match(parser, ")")) {
+            fprintf(stderr, "Expected ',' or ')' in parameter list, got %s\n", parser->tokens[parser->current].lexeme);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    expect_as(parser, RPAREN);
+    char *return_type = NULL;   
+    if (match(parser, ":")) {
+        parser_advance(parser);
+        return_type = parser->tokens[parser->current].lexeme;
+    }
+    parser_advance(parser);
+
+    expect_as(parser, LBRACE);
+
+    size_t body_capacity = 10;
+    size_t body_count = 0;
+    AST_NODE **consequent = (AST_NODE **)malloc(body_capacity * sizeof(AST_NODE *));
+
+    while (!match(parser, "}")) {
+        if (body_count >= body_capacity) {
+            body_capacity *= 2;
+            consequent = (AST_NODE **)realloc(consequent, body_capacity * sizeof(AST_NODE *));
+        }
+
+        AST_NODE *stmt = parse_stmt(parser);
+        if (stmt) {
+            consequent[body_count++] = stmt;
+        } else {
+            fprintf(stderr, "Unexpected token in procedure body: %s\n", parser->tokens[parser->current].lexeme);
+            parser_advance(parser);
+        }
+    }
+    expect_as(parser, RBRACE);
+
+    ProcStmt *stmt = (ProcStmt *)malloc(sizeof(ProcStmt));
+    stmt->identifier = identifier;
+    stmt->parameters = parameters;
+    stmt->parameter_count = count;
+    stmt->return_type = return_type;
+    stmt->consequent = consequent;
+    stmt->body_count = body_count;
+
+    return init_node(AST_PROC_STMT, stmt);
 }
 
 AST_NODE *parse_stmt(Parser *parser) {
@@ -469,6 +562,9 @@ AST_NODE *parse_stmt(Parser *parser) {
 
         case RETURN:
             return parse_return_stmt(parser);
+
+        case PROC:
+            return parse_proc_stmt(parser);
 
         case IDENTIFIER:
         case NUMERIC:

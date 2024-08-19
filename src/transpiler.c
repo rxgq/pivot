@@ -188,6 +188,27 @@ void generate_return_stmt(AST_NODE *node, FILE *fptr) {
     fprintf(fptr, ";");
 }
 
+void generate_proc_stmt(AST_NODE *node, FILE *fptr) {
+    ProcStmt *proc = &node->node.proc_stmt;
+
+    fprintf(fptr, "%s %s(", proc->return_type, proc->identifier->node.identifier_expr.value);
+    for (int i = 0; i < proc->parameter_count; i++) {
+        ProcParam param = proc->parameters[i]->node.proc_param;
+
+        fprintf(fptr, "%s %s", param.type, param.identifier);
+        if (i < proc->parameter_count - 1) {
+            fprintf(fptr, ", ");
+        }
+    }
+    fprintf(fptr, "){\n");
+
+    for (int i = 0; i < proc->body_count; i++) {
+        generate_stmt(proc->consequent[i], fptr);
+    }
+
+    fprintf(fptr, "}\n\n");
+}
+
 void generate_stmt(AST_NODE *node, FILE *fptr) {
     switch (node->type) {
         case AST_VAR_DEC:
@@ -218,6 +239,10 @@ void generate_stmt(AST_NODE *node, FILE *fptr) {
             generate_return_stmt(node, fptr);
             break;
 
+        case AST_PROC_STMT:
+            generate_proc_stmt(node, fptr);
+            break;
+
         default: fprintf(fptr, ast_type_to_string(node->type));
     }
 }
@@ -237,12 +262,21 @@ void generate(Program *ast) {
         exit(EXIT_FAILURE);
     }
 
-    fprintf(fptr, "#include <stdio.h>\n#include <stdbool.h>\n#include <string.h>\n\nint main(int argc, char *argv[]){\n");
+    fprintf(fptr, "#include <stdio.h>\n#include <stdbool.h>\n#include <string.h>\n\n");
 
     for (size_t i = 0; i < ast->count; i++) {
-        generate_stmt(ast->body[i], fptr);
+        if (ast->body[i]->type == AST_PROC_STMT) {
+            generate_proc_stmt(ast->body[i], fptr);
+        }
     }
 
+    fprintf(fptr, "int main(int argc, char *argv[]){\n");
+    for (size_t i = 0; i < ast->count; i++) {
+        if (ast->body[i]->type != AST_PROC_STMT) {
+            generate_stmt(ast->body[i], fptr);
+        }
+    }
+    
     fprintf(fptr, "return 0;\n}\n");
     fclose(fptr);
 }
