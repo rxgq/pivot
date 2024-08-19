@@ -115,17 +115,17 @@ void generate_var_dec(AST_NODE *node, FILE *output) {
     VarDecExpr *expr = &node->node.var_dec_expr;
 
     if (expr->type.type == STRING) {
-        fprintf(output, "%s %s = ", "char*", expr->identifier);
+        fprintf(output, "%s %s=", "char*", expr->identifier);
     } else if (expr->type.type == INT) {
-        fprintf(output, "%s %s = ", "int", expr->identifier);
+        fprintf(output, "%s %s=", "int", expr->identifier);
     } else if (expr->type.type == CHAR) {
-        fprintf(output, "%s %s = ", "char", expr->identifier);
+        fprintf(output, "%s %s=", "char", expr->identifier);
     } else if (expr->type.type == FLT) {
-        fprintf(output, "%s %s = ", "float", expr->identifier);
+        fprintf(output, "%s %s=", "float", expr->identifier);
     } else if (expr->type.type == BOOL) {
-        fprintf(output, "%s %s = ", "bool", expr->identifier);
+        fprintf(output, "%s %s=", "bool", expr->identifier);
     } else {
-        fprintf(output, "%s %s = ", "UNKOWN*", expr->identifier);
+        fprintf(output, "%s %s=", "UNKOWN*", expr->identifier);
     }
 
     generate_expression(expr->val, output);
@@ -181,6 +181,13 @@ void generate_simple_stmt(AST_NODE *node, FILE *fptr) {
     fprintf(fptr, ";\n");
 }
 
+void generate_return_stmt(AST_NODE *node, FILE *fptr) {
+    ReturnStmt *stmt = &node->node.return_stmt;
+    fprintf(fptr, "return ");
+    generate_expression(stmt->expr, fptr);
+    fprintf(fptr, ";");
+}
+
 void generate_stmt(AST_NODE *node, FILE *fptr) {
     switch (node->type) {
         case AST_VAR_DEC:
@@ -205,6 +212,10 @@ void generate_stmt(AST_NODE *node, FILE *fptr) {
 
         case AST_LOOP_STMT:
             generate_simple_stmt(node, fptr);
+            break;
+
+        case AST_RETURN_STMT:
+            generate_return_stmt(node, fptr);
             break;
 
         default: fprintf(fptr, ast_type_to_string(node->type));

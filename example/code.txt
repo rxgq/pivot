@@ -1,9 +1,2 @@
-let x: int = 10;
-
-while x > 0 {
-    x = x - 1;
-
-    if x == 3 {
-        break;
-    }
-}
+let x: bool = false;
+return x or false and not x;

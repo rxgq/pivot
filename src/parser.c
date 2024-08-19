@@ -102,6 +102,10 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
             node->node.loop_stmt = *(LoopStmt *)ast_node;
             break;
 
+        case AST_RETURN_STMT:
+            node->node.return_stmt = *(ReturnStmt *)ast_node;
+            break;
+
         default:
             free(node);
             fprintf(stderr, "Unknown AST_TYPE\n");
@@ -413,6 +417,20 @@ AST_NODE *parse_echo(Parser *parser) {
     return init_node(AST_ECHO_EXPR, echo_expr);
 }
 
+AST_NODE *parse_return_stmt(Parser *parser) {
+    expect_as(parser, RETURN);
+
+    AST_NODE *expr = parse_expr(parser);
+    
+    expect_as(parser, SEMICOLON);
+
+    ReturnStmt *stmt = (ReturnStmt *)malloc(sizeof(ReturnStmt));
+    stmt->expr = expr;
+
+
+    return init_node(AST_RETURN_STMT, stmt);
+}
+
 AST_NODE *parse_loop_stmt(Parser *parser) {
     Token curr = parser->tokens[parser->current];
 
@@ -448,6 +466,9 @@ AST_NODE *parse_stmt(Parser *parser) {
         case CONTINUE:
         case BREAK:
             return parse_loop_stmt(parser);
+
+        case RETURN:
+            return parse_return_stmt(parser);
 
         case IDENTIFIER:
         case NUMERIC:

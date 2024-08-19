@@ -20,7 +20,8 @@ typedef enum {
     AST_UNARY_EXPR,
     AST_COMPARISON_EXPR,
     AST_WHILE_STMT,
-    AST_LOOP_STMT
+    AST_LOOP_STMT,
+    AST_RETURN_STMT
 } AST_TYPE;
 
 typedef struct {
@@ -101,6 +102,10 @@ typedef struct {
     char *stmt;
 } LoopStmt;
 
+typedef struct {
+    AST_NODE *expr;
+} ReturnStmt;
+
 typedef struct AST_NODE {
     AST_TYPE type;
 
@@ -120,6 +125,7 @@ typedef struct AST_NODE {
         ComparisonExpr comparison_expr;
         WhileStmtExpr while_stmt_expr;
         LoopStmt loop_stmt;
+        ReturnStmt return_stmt;
     } node;
 
 } AST_NODE;

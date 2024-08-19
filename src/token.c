@@ -55,6 +55,7 @@ char *print_token(TokenType type) {
         case PROC: return "PROC";
         case BREAK: return "BREAK";
         case CONTINUE: return "CONTINUE";
+        case RETURN: return "RETURN";
         default: return "UNKNOWN";
     }
 }

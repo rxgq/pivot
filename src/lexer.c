@@ -26,6 +26,7 @@ KeywordMap keyword_map[] = {
     {"break", BREAK},
     {"continue", CONTINUE},
     {"proc", PROC},
+    {"return", RETURN},
     {"END_KEYWORD", BAD_TOKEN}
 };
 
