@@ -141,12 +141,26 @@ void generate_assignment_expr(AST_NODE *node, FILE *fptr) {
     fprintf(fptr, ";\n");
 }
 
+void generate_while_stmt(AST_NODE *node, FILE *fptr) {
+    WhileStmtExpr *expr = &node->node.while_stmt_expr;
+
+    fprintf(fptr, "while(");
+    generate_expression(expr->condition, fptr);
+    fprintf(fptr, ")");
+
+    fprintf(fptr, "{\n");
+    for (size_t i = 0; i < expr->body_count; i++) {
+        generate_stmt(expr->consequent[i], fptr);
+    }
+    fprintf(fptr, "}\n");
+}
+
 void generate_if_stmt(AST_NODE *node, FILE *fptr) {
     IfStmtExpr *expr = &node->node.if_stmt_expr;
 
-    fprintf(fptr, "if (");
+    fprintf(fptr, "if(");
     generate_expression(expr->condition, fptr);
-    fprintf(fptr, ") ");
+    fprintf(fptr, ")");
 
     fprintf(fptr, "{\n");
     for (size_t i = 0; i < expr->body_count; i++) {
@@ -177,6 +191,10 @@ void generate_stmt(AST_NODE *node, FILE *fptr) {
 
         case AST_ECHO_EXPR:
             generate_echo_expr(node, fptr);
+            break;
+
+        case AST_WHILE_STMT:
+            generate_while_stmt(node, fptr);
             break;
 
         default: fprintf(fptr, ast_type_to_string(node->type));

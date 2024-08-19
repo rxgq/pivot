@@ -3,9 +3,15 @@
 #include <string.h>
 
 int main(int argc, char *argv[]){
-char* x = "Hello World!";
-if (strcmp(x,"Hello World")==1) {
-printf(x);
+while(true){
+if(false || true){
+}
+bool x = true;
+while(x == true){
+if(!x){
+printf("test");
+}
+}
 }
 return 0;
 }

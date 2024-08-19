@@ -1,5 +1,14 @@
-let x: str = "Hello World!";
+while true {
+    if false or true {
 
-if x != "Hello World" {
-    echo x;
+    }
+    
+    let x: bool = true;
+
+    while x == true {
+        if not x {
+            echo "test";
+        }
+    }
 }
+

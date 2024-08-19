@@ -94,6 +94,10 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
             node->node.comparison_expr = *(ComparisonExpr *)ast_node;
             break;
 
+        case AST_WHILE_STMT:
+            node->node.while_stmt_expr = *(WhileStmtExpr *)ast_node;
+            break;
+
         default:
             free(node);
             fprintf(stderr, "Unknown AST_TYPE\n");
@@ -356,6 +360,42 @@ AST_NODE *parse_if_stmt(Parser *parser) {
     return init_node(AST_IF_STMT, expr);
 }
 
+AST_NODE *parse_while_stmt(Parser *parser) {
+    expect_as(parser, WHILE);
+
+    AST_NODE *condition = parse_logical_or(parser);
+
+    expect_as(parser, LBRACE);
+
+    size_t capacity = 1;
+    size_t count = 0;
+    AST_NODE **consequent = (AST_NODE **)malloc(capacity * sizeof(AST_NODE *));
+    
+    while (!match(parser, "}")) {
+        if (count >= capacity) {
+            capacity *= 2;
+            consequent = (AST_NODE **)realloc(consequent, capacity * sizeof(AST_NODE *));
+        }
+
+        AST_NODE *stmt = parse_stmt(parser);
+        if (stmt) {
+            consequent[count++] = stmt;
+        } else {
+            fprintf(stderr, "Unexpected token in if statement body: %s\n", parser->tokens[parser->current].lexeme);
+            parser_advance(parser);
+        }
+    }
+
+    expect_as(parser, RBRACE);
+
+    WhileStmtExpr *expr = (WhileStmtExpr *)malloc(sizeof(WhileStmtExpr));;
+    expr->condition = condition;
+    expr->consequent = consequent;
+    expr->body_count = count;
+
+    return init_node(AST_WHILE_STMT, expr);
+}
+
 AST_NODE *parse_echo(Parser *parser) {
     expect_as(parser, ECHO);
 
@@ -381,6 +421,9 @@ AST_NODE *parse_stmt(Parser *parser) {
 
         case ECHO:
             return parse_echo(parser);
+
+        case WHILE:
+            return parse_while_stmt(parser);
 
         case IDENTIFIER:
         case NUMERIC:
