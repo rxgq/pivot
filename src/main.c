@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 
     Lexer *lexer = init_lexer(buffer);
     Token* tokens = tokenize(lexer);
-    //print_lexer(lexer);
+    print_lexer(lexer);
 
     Parser *parser = init_parser(tokens);
     Program* ast = parse_ast(parser);

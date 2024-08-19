@@ -105,6 +105,10 @@ void generate_expression(AST_NODE *node, FILE *output) {
             generate_comparison_expr(node, output);
             break;
 
+        case AST_PROC_CALL:
+            generate_proc_call(node, output);
+            break;
+
         default:
             fprintf(stderr, "Unknown expression type\n");
             exit(EXIT_FAILURE);
@@ -209,6 +213,23 @@ void generate_proc_stmt(AST_NODE *node, FILE *fptr) {
     fprintf(fptr, "}\n\n");
 }
 
+void generate_proc_call(AST_NODE *node, FILE *fptr) {
+    ProcCall *call = &node->node.proc_call;
+
+    fprintf(fptr, call->identifier);
+    fprintf(fptr, "(");
+
+    for (int i = 0; i < call->param_count; i++) {
+        AST_NODE* param = call->params[i];
+        generate_expression(param, fptr);
+
+        if (i < call->param_count - 1) {
+            fprintf(fptr, ", ");
+        }
+    }
+    fprintf(fptr, ");");
+}
+
 void generate_stmt(AST_NODE *node, FILE *fptr) {
     switch (node->type) {
         case AST_VAR_DEC:
@@ -241,6 +262,10 @@ void generate_stmt(AST_NODE *node, FILE *fptr) {
 
         case AST_PROC_STMT:
             generate_proc_stmt(node, fptr);
+            break;
+
+        case AST_PROC_CALL:
+            generate_proc_call(node, fptr);
             break;
 
         default: fprintf(fptr, ast_type_to_string(node->type));
@@ -276,7 +301,7 @@ void generate(Program *ast) {
             generate_stmt(ast->body[i], fptr);
         }
     }
-    
+
     fprintf(fptr, "return 0;\n}\n");
     fclose(fptr);
 }

@@ -114,6 +114,10 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
             node->node.proc_param = *(ProcParam *)ast_node;
             break;
 
+        case AST_PROC_CALL:
+            node->node.proc_call = *(ProcCall *)ast_node;
+            break;
+
         default:
             free(node);
             fprintf(stderr, "Unknown AST_TYPE %d\n", type);
@@ -160,6 +164,13 @@ AST_NODE *parse_primary(Parser *parser) {
         return init_node(AST_BOOL_DEC, &expr);
     }
     else if (curr.type == IDENTIFIER) {
+        if (match(parser, "(")) {
+            parser->current--;
+            return parse_proc_call(parser);
+        } else {
+            parser->current--;
+        }
+
         IdentifierExpr expr= *(IdentifierExpr *)malloc(sizeof(IdentifierExpr));
         expr.value = strdup(curr.lexeme);
         return init_node(AST_IDENTIFIER, &expr);
@@ -425,11 +436,44 @@ AST_NODE *parse_echo(Parser *parser) {
     return init_node(AST_ECHO_EXPR, echo_expr);
 }
 
+
+AST_NODE *parse_proc_call(Parser *parser) {
+    Token identifier_token = parser->tokens[parser->current];
+
+    parser_advance(parser);
+    expect_as(parser, LPAREN);
+
+    ProcCall *call = (ProcCall *)malloc(sizeof(ProcCall));
+    call->identifier = strdup(identifier_token.lexeme);
+    call->param_count = 0;
+    call->params = NULL;
+
+    if (!match(parser, ")")) {
+        do {
+            call->param_count++;
+            call->params = (AST_NODE **)realloc(call->params, sizeof(AST_NODE *) * call->param_count);
+            call->params[call->param_count - 1] = parse_expr(parser);
+
+            if (!match(parser, ",")) {
+                break;
+            }
+            parser_advance(parser);
+
+        } while (1);
+    }
+
+    expect_as(parser, RPAREN);
+    expect_as(parser, SEMICOLON);
+
+    return init_node(AST_PROC_CALL, call);
+}
+
 AST_NODE *parse_return_stmt(Parser *parser) {
     expect_as(parser, RETURN);
 
     AST_NODE *expr = parse_expr(parser);
-    
+    print_ast_node(expr, 1);
+
     expect_as(parser, SEMICOLON);
 
     ReturnStmt *stmt = (ReturnStmt *)malloc(sizeof(ReturnStmt));
@@ -474,6 +518,7 @@ AST_NODE *parse_proc_stmt(Parser *parser) {
     parser_advance(parser);
 
     AST_NODE *identifier = parse_primary(parser);
+    parser_advance(parser);
 
     expect_as(parser, ASSIGNMENT);
     expect_as(parser, LPAREN);

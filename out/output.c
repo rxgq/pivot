@@ -2,18 +2,9 @@
 #include <stdbool.h>
 #include <string.h>
 
-int addTwo(int a, int b){
-while(true){
-if(!false||true){
-printf("test");
-}
-int x=10;
-printf(x);
-if(strcmp("test","false")==0||2>1){
-return 1;}
-}
-}
+int fib(int n){
+return 2;}
 
 int main(int argc, char *argv[]){
-return 0;
+fib(10);return 0;
 }

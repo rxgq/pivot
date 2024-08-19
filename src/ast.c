@@ -128,6 +128,18 @@ void print_proc_stmt(ProcStmt *stmt, int indent_level) {
     printf("%*s)\n", indent_level, "");
 }
 
+void print_call_expr(ProcCall *expr, int indent_level) {
+    printf("%*sCallExpr(\n", indent_level, "");
+    printf("%*sProc: %s\n", indent_level + 2, "", expr->identifier);
+
+    printf("%*sParams:\n", indent_level + 2, "");
+    for (size_t i = 0; i < expr->param_count; i++) {
+        print_ast_node(expr->params[i], indent_level + 4);
+    }
+
+    printf("%*s)\n", indent_level, "");
+}
+
 void print_ast_node(AST_NODE *node, int indent_level) {
     if (!node) {
         printf("%*sNULL\n", indent_level, "");
@@ -179,6 +191,9 @@ void print_ast_node(AST_NODE *node, int indent_level) {
             break;
         case AST_RETURN_STMT:
             print_return_stmt(&node->node.return_stmt, indent_level);
+            break;
+        case AST_PROC_CALL:
+            print_call_expr(&node->node.proc_call, indent_level);
             break;
         default:
             printf("%*sUnknown AST_NODE type\n", indent_level, "");

@@ -24,6 +24,7 @@ typedef enum {
     AST_RETURN_STMT,
     AST_PROC_STMT,
     AST_PROC_PARAM,
+    AST_PROC_CALL
 } AST_TYPE;
 
 typedef struct {
@@ -122,6 +123,12 @@ typedef struct {
     char *type;
 } ProcParam;
 
+typedef struct {
+    char *identifier;
+    AST_NODE **params;
+    int param_count;
+} ProcCall;
+
 typedef struct AST_NODE {
     AST_TYPE type;
 
@@ -144,6 +151,7 @@ typedef struct AST_NODE {
         ReturnStmt return_stmt;
         ProcStmt proc_stmt;
         ProcParam proc_param;
+        ProcCall proc_call;
     } node;
 
 } AST_NODE;
