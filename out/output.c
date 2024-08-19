@@ -3,8 +3,16 @@
 #include <string.h>
 
 int fib(int n){
-return 2;}
+int a=0;
+int b=0;
+while(b<n){
+int temp=a+b;
+a=b;
+b=temp;
+printf(temp);
+}
+return a;}
 
-int main(int argc, char *argv[]){
+int main(int argc,char*argv[]){
 fib(10);return 0;
 }

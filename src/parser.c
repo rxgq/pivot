@@ -167,9 +167,7 @@ AST_NODE *parse_primary(Parser *parser) {
         if (match(parser, "(")) {
             parser->current--;
             return parse_proc_call(parser);
-        } else {
-            parser->current--;
-        }
+        } 
 
         IdentifierExpr expr= *(IdentifierExpr *)malloc(sizeof(IdentifierExpr));
         expr.value = strdup(curr.lexeme);
@@ -472,8 +470,7 @@ AST_NODE *parse_return_stmt(Parser *parser) {
     expect_as(parser, RETURN);
 
     AST_NODE *expr = parse_expr(parser);
-    print_ast_node(expr, 1);
-
+    
     expect_as(parser, SEMICOLON);
 
     ReturnStmt *stmt = (ReturnStmt *)malloc(sizeof(ReturnStmt));
@@ -518,7 +515,6 @@ AST_NODE *parse_proc_stmt(Parser *parser) {
     parser_advance(parser);
 
     AST_NODE *identifier = parse_primary(parser);
-    parser_advance(parser);
 
     expect_as(parser, ASSIGNMENT);
     expect_as(parser, LPAREN);

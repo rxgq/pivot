@@ -1,5 +1,16 @@
 proc fib = (n: int): int {
-    return 2;
+    let a: int = 0;
+    let b: int = 0;
+
+    while b < n {
+        let temp: int = a + b;
+        a = b;
+        b = temp;
+
+        echo temp;
+    }
+
+    return a;
 }
 
 fib(10);

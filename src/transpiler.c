@@ -201,7 +201,7 @@ void generate_proc_stmt(AST_NODE *node, FILE *fptr) {
 
         fprintf(fptr, "%s %s", param.type, param.identifier);
         if (i < proc->parameter_count - 1) {
-            fprintf(fptr, ", ");
+            fprintf(fptr, ",");
         }
     }
     fprintf(fptr, "){\n");
@@ -295,7 +295,7 @@ void generate(Program *ast) {
         }
     }
 
-    fprintf(fptr, "int main(int argc, char *argv[]){\n");
+    fprintf(fptr, "int main(int argc,char*argv[]){\n");
     for (size_t i = 0; i < ast->count; i++) {
         if (ast->body[i]->type != AST_PROC_STMT) {
             generate_stmt(ast->body[i], fptr);
