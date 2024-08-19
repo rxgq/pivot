@@ -23,6 +23,9 @@ KeywordMap keyword_map[] = {
     {"str", STRING},
     {"bool", BOOL},
     {"echo", ECHO},
+    {"break", BREAK},
+    {"continue", CONTINUE},
+    {"proc", PROC},
     {"END_KEYWORD", BAD_TOKEN}
 };
 

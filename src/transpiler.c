@@ -49,7 +49,7 @@ void generate_comparison_expr(AST_NODE *node, FILE *fptr) {
     }
 
     generate_expression(expr->left, fptr);
-    fprintf(fptr, " %s ", expr->op);
+    fprintf(fptr, "%s", expr->op);
     generate_expression(expr->right, fptr);
 }
 
@@ -84,16 +84,16 @@ void generate_expression(AST_NODE *node, FILE *output) {
 
         case AST_BINARY_EXPR:
             generate_expression(node->node.binary_expr.left, output);
-            fprintf(output, " %s ", node->node.binary_expr.op);
+            fprintf(output, "%s", node->node.binary_expr.op);
             generate_expression(node->node.binary_expr.right, output);
             break;
 
         case AST_LOGICAL_EXPR:
             generate_expression(node->node.logical_expr.left, output);
             if (strcmp(node->node.logical_expr.op, "or") == 0) {
-                fprintf(output, " || ");
+                fprintf(output, "||");
             } else if (strcmp(node->node.logical_expr.op, "and") == 0) {
-                fprintf(output, " && ");    
+                fprintf(output, "&&");
             } else {
                 fprintf(stderr, "Unknown logical operator: %s\n", node->node.logical_expr.op);
                 exit(EXIT_FAILURE);
@@ -175,6 +175,12 @@ void generate_echo_expr(AST_NODE *node, FILE *fptr) {
     fprintf(fptr, ");\n");
 }
 
+void generate_simple_stmt(AST_NODE *node, FILE *fptr) {
+    LoopStmt *stmt = &node->node.loop_stmt;
+    fprintf(fptr, stmt->stmt);
+    fprintf(fptr, ";\n");
+}
+
 void generate_stmt(AST_NODE *node, FILE *fptr) {
     switch (node->type) {
         case AST_VAR_DEC:
@@ -195,6 +201,10 @@ void generate_stmt(AST_NODE *node, FILE *fptr) {
 
         case AST_WHILE_STMT:
             generate_while_stmt(node, fptr);
+            break;
+
+        case AST_LOOP_STMT:
+            generate_simple_stmt(node, fptr);
             break;
 
         default: fprintf(fptr, ast_type_to_string(node->type));

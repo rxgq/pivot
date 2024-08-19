@@ -98,6 +98,10 @@ AST_NODE *init_node(AST_TYPE type, void *ast_node) {
             node->node.while_stmt_expr = *(WhileStmtExpr *)ast_node;
             break;
 
+        case AST_LOOP_STMT:
+            node->node.loop_stmt = *(LoopStmt *)ast_node;
+            break;
+
         default:
             free(node);
             fprintf(stderr, "Unknown AST_TYPE\n");
@@ -409,6 +413,22 @@ AST_NODE *parse_echo(Parser *parser) {
     return init_node(AST_ECHO_EXPR, echo_expr);
 }
 
+AST_NODE *parse_loop_stmt(Parser *parser) {
+    Token curr = parser->tokens[parser->current];
+
+    if (curr.type != CONTINUE && curr.type != BREAK) {
+        exit(EXIT_FAILURE);
+    }
+
+    parser_advance(parser);
+
+    expect_as(parser, SEMICOLON);
+    LoopStmt *stmt = (LoopStmt *)malloc(sizeof(LoopStmt));
+    stmt->stmt = curr.lexeme;
+
+    return init_node(AST_LOOP_STMT, stmt);
+}
+
 AST_NODE *parse_stmt(Parser *parser) {
     TokenType curr = parser->tokens[parser->current].type;
 
@@ -424,6 +444,10 @@ AST_NODE *parse_stmt(Parser *parser) {
 
         case WHILE:
             return parse_while_stmt(parser);
+
+        case CONTINUE:
+        case BREAK:
+            return parse_loop_stmt(parser);
 
         case IDENTIFIER:
         case NUMERIC:

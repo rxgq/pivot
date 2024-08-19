@@ -19,7 +19,8 @@ typedef enum {
     AST_ECHO_EXPR,
     AST_UNARY_EXPR,
     AST_COMPARISON_EXPR,
-    AST_WHILE_STMT
+    AST_WHILE_STMT,
+    AST_LOOP_STMT
 } AST_TYPE;
 
 typedef struct {
@@ -96,6 +97,10 @@ typedef struct {
     AST_NODE *right;
 } ComparisonExpr;
 
+typedef struct {
+    char *stmt;
+} LoopStmt;
+
 typedef struct AST_NODE {
     AST_TYPE type;
 
@@ -114,6 +119,7 @@ typedef struct AST_NODE {
         UnaryExpr unary_expr;
         ComparisonExpr comparison_expr;
         WhileStmtExpr while_stmt_expr;
+        LoopStmt loop_stmt;
     } node;
 
 } AST_NODE;

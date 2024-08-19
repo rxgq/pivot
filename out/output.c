@@ -3,14 +3,11 @@
 #include <string.h>
 
 int main(int argc, char *argv[]){
-while(true){
-if(false || true){
-}
-bool x = true;
-while(x == true){
-if(!x){
-printf("test");
-}
+int x = 10;
+while(x>0){
+x=x-1;
+if(x==3){
+break;
 }
 }
 return 0;

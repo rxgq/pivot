@@ -1,14 +1,9 @@
-while true {
-    if false or true {
+let x: int = 10;
 
-    }
-    
-    let x: bool = true;
+while x > 0 {
+    x = x - 1;
 
-    while x == true {
-        if not x {
-            echo "test";
-        }
+    if x == 3 {
+        break;
     }
 }
-

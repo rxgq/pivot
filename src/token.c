@@ -52,6 +52,9 @@ char *print_token(TokenType type) {
         case FLT: return "FLT";
         case ECHO: return "ECHO";
         case BOOL: return "BOOL";
+        case PROC: return "PROC";
+        case BREAK: return "BREAK";
+        case CONTINUE: return "CONTINUE";
         default: return "UNKNOWN";
     }
 }
